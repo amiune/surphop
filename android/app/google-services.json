@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "298477354681",
+    "project_id": "surphop",
+    "storage_bucket": "surphop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298477354681:android:532e306bf6baff80fae568",
+        "android_client_info": {
+          "package_name": "com.example.surphop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298477354681-p1ma9fsje5qrsigff5gj40f5rphnr4uh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8qCrw53mxUjOsYP-tonmbWGRXn5UkUrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298477354681-p1ma9fsje5qrsigff5gj40f5rphnr4uh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "298477354681-i2on11sc8sm12jcnqkorg2g1npdg6k8t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.reactnativefirebase"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
