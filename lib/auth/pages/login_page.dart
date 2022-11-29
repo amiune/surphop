@@ -2,8 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'forgotpassword_page.dart';
+
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  final VoidCallback showRegisterPage;
+  const LoginPage({Key? key, required this.showRegisterPage}) : super(key: key);
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -12,10 +15,26 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future signIn() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const Center(child: CircularProgressIndicator());
+        });
+
     await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim());
+
+    if (!mounted) return;
+    Navigator.of(context).pop();
   }
 
   @override
@@ -31,10 +50,10 @@ class _LoginPageState extends State<LoginPage> {
             const Icon(Icons.school_outlined, size: 100),
             const SizedBox(height: 75),
             const SizedBox(height: 25),
-            Text("Hello Again!", style: GoogleFonts.bebasNeue(fontSize: 52)),
+            Text("Hello Again", style: GoogleFonts.bebasNeue(fontSize: 52)),
             //const Text("Hello Again!"),
             const SizedBox(height: 10),
-            const Text("Welcome back", style: TextStyle(fontSize: 24)),
+            const Text("Welcome back!", style: TextStyle(fontSize: 24)),
             const SizedBox(height: 30),
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -68,6 +87,26 @@ class _LoginPageState extends State<LoginPage> {
                         )))),
             const SizedBox(height: 10),
             Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const ForgotPasswordPage();
+                      }));
+                    },
+                    child: const Text("Forgot Password?",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold)),
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: GestureDetector(
                     onTap: signIn,
@@ -88,24 +127,20 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   "Not registered? ",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text("Register Now",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))
+                GestureDetector(
+                  onTap: widget.showRegisterPage,
+                  child: const Text("Register Now",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold)),
+                )
               ],
             )
           ],
         )))));
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 }
