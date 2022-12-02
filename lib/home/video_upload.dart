@@ -1,28 +1,29 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:path/path.dart' as p;
+import 'package:firebase_storage/firebase_storage.dart';
 
 class VideoUpload extends StatefulWidget {
-  const VideoUpload({Key? key}) : super(key: key);
+  final String timelineId;
+  const VideoUpload({Key? key, required this.timelineId}) : super(key: key);
   @override
   State<VideoUpload> createState() => _VideoUploadState();
 }
 
 class _VideoUploadState extends State<VideoUpload> {
-  firebase_storage.FirebaseStorage storage =
-      firebase_storage.FirebaseStorage.instance;
+  final user = FirebaseAuth.instance.currentUser!;
+  FirebaseStorage storage = FirebaseStorage.instance;
 
-  File? _photo;
+  File? _file;
   final ImagePicker _picker = ImagePicker();
 
   Future imgFromGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
     setState(() {
       if (pickedFile != null) {
-        _photo = File(pickedFile.path);
+        _file = File(pickedFile.path);
         uploadFile();
       } else {
         print('No image selected.');
@@ -32,10 +33,9 @@ class _VideoUploadState extends State<VideoUpload> {
 
   Future imgFromCamera() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-
     setState(() {
       if (pickedFile != null) {
-        _photo = File(pickedFile.path);
+        _file = File(pickedFile.path);
         uploadFile();
       } else {
         print('No image selected.');
@@ -44,17 +44,22 @@ class _VideoUploadState extends State<VideoUpload> {
   }
 
   Future uploadFile() async {
-    if (_photo == null) return;
-    final fileName = p.basename(_photo!.path);
-    final destination = 'files/$fileName';
-
+    if (_file == null) return;
     try {
-      final ref = firebase_storage.FirebaseStorage.instance
-          .ref(destination)
-          .child('file/');
-      await ref.putFile(_photo!);
+      final videoId = DateTime.now().millisecondsSinceEpoch;
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child("users/${user.uid}/${widget.timelineId}/$videoId");
+      await ref.putFile(_file!);
+      String videoUrl = await ref.getDownloadURL();
+      await FirebaseFirestore.instance.collection("videos").add({
+        'userId': user.uid,
+        'timelineId': widget.timelineId,
+        'videoURL': videoUrl,
+        'uploadDate': DateTime.now().toIso8601String()
+      });
     } catch (e) {
-      print('error occured ${e.toString()}');
+      print('error occured');
     }
   }
 

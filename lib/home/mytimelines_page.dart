@@ -1,22 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:surphop/home/mytimelines_page.dart';
-import 'package:surphop/home/video_upload.dart';
+import 'package:surphop/home/timeline_tile.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class MyTimelines extends StatefulWidget {
+  const MyTimelines({super.key});
+
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MyTimelines> createState() => _MyTimelinesState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MyTimelinesState extends State<MyTimelines> {
   final user = FirebaseAuth.instance.currentUser!;
-
   String? timelineNameText;
   final _timelineNameController = TextEditingController();
 
-  Future<void> _displayTextInputDialog(BuildContext context) async {
+  void createNewTimeline() async {
     return showDialog(
         context: context,
         builder: (context) {
@@ -56,45 +55,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text("Signed In as ${user.email}"),
-      const SizedBox(height: 10),
-      MaterialButton(
-        onPressed: () {
-          FirebaseAuth.instance.signOut();
-        },
-        color: Colors.green[200],
-        child: const Text("Sign Out"),
-      ),
-      const SizedBox(height: 10),
-      MaterialButton(
-        onPressed: () {
-          _displayTextInputDialog(context);
-        },
-        color: Colors.green[200],
-        child: const Text("Create Timeline"),
-      ),
-      const SizedBox(height: 10),
-      MaterialButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const VideoUpload(timelineId: 'xx');
-          }));
-        },
-        color: Colors.green[200],
-        child: const Text("Upload Video"),
-      ),
-      MaterialButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const MyTimelines();
-          }));
-        },
-        color: Colors.green[200],
-        child: const Text("My Timelines"),
-      )
-    ])));
+        appBar: AppBar(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: createNewTimeline,
+          child: const Icon(Icons.add),
+        ),
+        body: ListView(
+          children: const [
+            TimelineTile(
+              timelineName: "Latte Art",
+            ),
+            TimelineTile(timelineName: "Guitarra"),
+          ],
+        ));
   }
 }

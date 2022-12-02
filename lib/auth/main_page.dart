@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:surphop/auth/pages/auth_page.dart';
+import 'package:surphop/auth/auth_page.dart';
 import 'package:surphop/home/home_page.dart';
 
 class MainPage extends StatelessWidget {

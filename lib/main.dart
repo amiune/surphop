@@ -13,7 +13,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-        debugShowCheckedModeBanner: false, home: MainPage());
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: const MainPage(),
+        theme: ThemeData(primarySwatch: Colors.green));
   }
 }
