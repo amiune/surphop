@@ -44,6 +44,7 @@ dependencies:
   path: ^1.8.2
   cloud_firestore: ^4.1.0
   flutter_slidable: ^2.0.0
+  video_player: ^2.4.8
 
 dev_dependencies:
   flutter_test:

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:surphop/home/timeline_tile.dart';
+import 'package:surphop/unusedcode/videoapp_example.dart';
 
 class MyTimelines extends StatefulWidget {
   const MyTimelines({super.key});
@@ -15,8 +16,20 @@ class _MyTimelinesState extends State<MyTimelines> {
   String? timelineNameText;
   final _timelineNameController = TextEditingController();
 
+  List<String> timelinesIds = [];
+  Future getMyTimelines() async {
+    timelinesIds = [];
+    await FirebaseFirestore.instance
+        .collection('timelines')
+        .where('userId', isEqualTo: user.uid.toString())
+        .get()
+        .then(((snapshot) => snapshot.docs.forEach(((element) {
+              timelinesIds.add(element.reference.id);
+            }))));
+  }
+
   void createNewTimeline() async {
-    return showDialog(
+    showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -39,6 +52,7 @@ class _MyTimelinesState extends State<MyTimelines> {
                       'timelineName': _timelineNameController.text.trim(),
                       'creationDate': DateTime.now().toIso8601String()
                     });
+                    setState(() {});
                   }
 
                   _timelineNameController.text = "";
@@ -55,18 +69,32 @@ class _MyTimelinesState extends State<MyTimelines> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text(
+            user.email!,
+            style: const TextStyle(fontSize: 16),
+          ),
+          actions: [
+            GestureDetector(
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
+                  //Navigator.push(context, MaterialPageRoute(builder: (context) {return VideoApp();}));
+                },
+                child: const Icon(Icons.logout))
+          ],
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: createNewTimeline,
           child: const Icon(Icons.add),
         ),
-        body: ListView(
-          children: const [
-            TimelineTile(
-              timelineName: "Latte Art",
-            ),
-            TimelineTile(timelineName: "Guitarra"),
-          ],
-        ));
+        body: FutureBuilder(
+            future: getMyTimelines(),
+            builder: (context, snapshot) {
+              return ListView.builder(
+                  itemCount: timelinesIds.length,
+                  itemBuilder: (context, index) {
+                    return TimelineTile(timelineId: timelinesIds[index]);
+                  });
+            }));
   }
 }
