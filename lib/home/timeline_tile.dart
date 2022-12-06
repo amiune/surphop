@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:surphop/home/timeline_videos.dart';
+import 'package:surphop/home/timeline_videos_page.dart';
 import 'get_timeline_name.dart';
 
 class TimelineTile extends StatelessWidget {

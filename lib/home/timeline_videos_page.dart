@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:surphop/home/video_tile.dart';
+import 'package:surphop/home/video_thumbnail_tile.dart';
 
 import 'get_timeline_name.dart';
 
@@ -50,6 +50,7 @@ class _TimelineVideosState extends State<TimelineVideos> {
         'videoURL': videoUrl,
         'uploadDate': DateTime.now().toIso8601String()
       });
+      setState(() {});
     } catch (e) {
       print('error occured');
     }
@@ -74,11 +75,22 @@ class _TimelineVideosState extends State<TimelineVideos> {
       body: FutureBuilder(
           future: getTimelineVideos(),
           builder: (context, snapshot) {
-            return ListView.builder(
-                itemCount: timelineVideosURLs.length,
-                itemBuilder: (context, index) {
-                  return VideoTile(videoURL: timelineVideosURLs[index]);
-                });
+            return CustomScrollView(slivers: <Widget>[
+              SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 1,
+                    crossAxisCount: 3,
+                    childAspectRatio: 0.55,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return VideoThumbnailTile(
+                          videoURL: timelineVideosURLs[index]);
+                    },
+                    childCount: timelineVideosURLs.length,
+                  ))
+            ]);
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: videoFromGallery,
