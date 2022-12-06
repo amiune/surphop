@@ -23,15 +23,18 @@ class _TimelineVideosState extends State<TimelineVideos> {
   File? _file;
   final ImagePicker _picker = ImagePicker();
 
-  List<String> timelineVideosURLs = [];
+  List<String> timelineVideoThumbnailsURLs = [];
+  List<String> timelineVideoURLs = [];
   Future getTimelineVideos() async {
-    timelineVideosURLs = [];
+    timelineVideoThumbnailsURLs = [];
+    timelineVideoURLs = [];
     await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
-              timelineVideosURLs.add(element['videoURL']);
+              timelineVideoThumbnailsURLs.add(element['videoURL']);
+              timelineVideoURLs.add(element['videoURL']);
             }))));
   }
 
@@ -86,9 +89,10 @@ class _TimelineVideosState extends State<TimelineVideos> {
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
                       return VideoThumbnailTile(
-                          videoURL: timelineVideosURLs[index]);
+                          videoThumbnailURL: timelineVideoThumbnailsURLs[index],
+                          videolURL: timelineVideoThumbnailsURLs[index]);
                     },
-                    childCount: timelineVideosURLs.length,
+                    childCount: timelineVideoThumbnailsURLs.length,
                   ))
             ]);
           }),
