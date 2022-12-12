@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:surphop/home/cachedvideo_page.dart';
 import 'package:surphop/home/video_thumbnail_tile.dart';
 
 import 'get_timeline_name.dart';
@@ -33,27 +35,35 @@ class _TimelineVideosState extends State<TimelineVideos> {
         .where('timelineId', isEqualTo: widget.timelineId)
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
-              timelineVideoThumbnailsURLs.add(element['videoURL']);
-              timelineVideoURLs.add(element['videoURL']);
+              timelineVideoThumbnailsURLs.add(element['videoThumbnailUrl']);
+              timelineVideoURLs.add(element['videoUrl']);
             }))));
   }
 
   Future uploadFile() async {
     if (_file == null) return;
+    var fileExtension = _file!.path.substring(_file!.path.lastIndexOf('.'));
     try {
       final videoId = DateTime.now().millisecondsSinceEpoch;
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child("users/${user.uid}/${widget.timelineId}/$videoId");
+      final ref = FirebaseStorage.instance.ref().child(
+          "users/${user.uid}/${widget.timelineId}/$videoId$fileExtension");
       await ref.putFile(_file!);
       String videoUrl = await ref.getDownloadURL();
+      String videoThumbnailUrl = videoUrl.replaceAll(".mp4", ".jpg");
       await FirebaseFirestore.instance.collection("videos").add({
         'userId': user.uid,
         'timelineId': widget.timelineId,
-        'videoURL': videoUrl,
+        'videoUrl': videoUrl,
+        'videoThumbnailUrl': videoThumbnailUrl,
         'uploadDate': DateTime.now().toIso8601String()
+      }).then((_) {
+        DefaultCacheManager().getSingleFile(videoUrl).then((videoFile) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return CachedVideoPage(videoFile: videoFile);
+          }));
+        });
       });
-      setState(() {});
+      //setState(() {});
     } catch (e) {
       print('error occured');
     }
@@ -89,8 +99,8 @@ class _TimelineVideosState extends State<TimelineVideos> {
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
                       return VideoThumbnailTile(
-                          videoThumbnailURL: timelineVideoThumbnailsURLs[index],
-                          videolURL: timelineVideoThumbnailsURLs[index]);
+                          videoThumbnailUrl: timelineVideoThumbnailsURLs[index],
+                          videoUrl: timelineVideoURLs[index]);
                     },
                     childCount: timelineVideoThumbnailsURLs.length,
                   ))
