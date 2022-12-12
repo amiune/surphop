@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:surphop/home/timeline_tile.dart';
-import 'package:surphop/unusedcode/videoapp_example.dart';
 
 class MyTimelines extends StatefulWidget {
   const MyTimelines({super.key});

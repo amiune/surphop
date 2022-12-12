@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_cache_manager/file.dart';
 
-class VideoPage extends StatefulWidget {
-  final String videoURL;
-  const VideoPage({super.key, required this.videoURL});
+class CachedVideoPage extends StatefulWidget {
+  final File videoFile;
+  const CachedVideoPage({super.key, required this.videoFile});
 
   @override
-  State<VideoPage> createState() => _VideoPageState();
+  State<CachedVideoPage> createState() => _CachedVideoPageState();
 }
 
-class _VideoPageState extends State<VideoPage> {
+class _CachedVideoPageState extends State<CachedVideoPage> {
   late VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.videoURL);
+    _controller = VideoPlayerController.file(widget.videoFile);
     _controller.initialize().then((_) {
       // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
       setState(() {});

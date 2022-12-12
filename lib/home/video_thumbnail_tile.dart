@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:surphop/home/video_page.dart';
+import 'package:surphop/home/cachedvideo_page.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class VideoThumbnailTile extends StatefulWidget {
   final String videoThumbnailURL;
@@ -17,9 +18,13 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return VideoPage(videoURL: widget.videolURL);
-          }));
+          DefaultCacheManager()
+              .getSingleFile(widget.videolURL)
+              .then((videoFile) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return CachedVideoPage(videoFile: videoFile);
+            }));
+          });
         },
         child: Container(
             padding: const EdgeInsets.all(0),
