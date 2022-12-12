@@ -1,13 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:surphop/home/cachedvideo_page.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:surphop/home/cachedvideo_tile.dart';
 
 class VideoThumbnailTile extends StatefulWidget {
-  final String videoThumbnailUrl;
   final String videoUrl;
-  const VideoThumbnailTile(
-      {super.key, required this.videoThumbnailUrl, required this.videoUrl});
+  const VideoThumbnailTile({super.key, required this.videoUrl});
 
   @override
   State<VideoThumbnailTile> createState() => _VideoThumbnailTileState();
@@ -28,9 +26,14 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
         },
         child: Container(
             padding: const EdgeInsets.all(0),
-            child: CachedNetworkImage(
-              placeholder: (context, url) => const CircularProgressIndicator(),
-              imageUrl: widget.videoThumbnailUrl,
-            )));
+            child: FutureBuilder(
+                future: DefaultCacheManager().getSingleFile(widget.videoUrl),
+                builder: ((context, snapshot) {
+                  if (snapshot.hasData) {
+                    return CachedVideoTile(videoFile: snapshot.data!);
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                }))));
   }
 }
