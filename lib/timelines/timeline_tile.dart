@@ -19,6 +19,7 @@ class TimelineTile extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return TimelineVideos(
             timelineId: timelineId,
+            timelineName: timelineName,
           );
         }));
       },

@@ -9,7 +9,7 @@ class MenuPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const MyBottomAppBar(),
+      bottomNavigationBar: const MenuBottomAppBar(),
       body: ListView(padding: EdgeInsets.zero, children: [
         SizedBox(
             height: 150.0,
@@ -17,7 +17,7 @@ class MenuPage extends StatelessWidget {
                 decoration: const BoxDecoration(
                   color: Colors.blue,
                 ),
-                child: user.displayName != ""
+                child: user.displayName != null && user.displayName != ""
                     ? Text(user.displayName!)
                     : Text(user.email!))),
         ListTile(title: const Text("Verify Email"), onTap: () {}),

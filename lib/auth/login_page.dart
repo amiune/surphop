@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.school_outlined, size: 100),
+            const Icon(Icons.school_rounded, size: 100),
             const SizedBox(height: 75),
             const SizedBox(height: 25),
             Text("Hello Again", style: GoogleFonts.bebasNeue(fontSize: 52)),

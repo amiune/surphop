@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:surphop/home/bottom_appbar.dart';
+import 'package:surphop/home/video_bottom_appbar.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cache_manager/file.dart';
 
 class CachedVideoPage extends StatefulWidget {
+  final String videoId;
   final File videoFile;
-  const CachedVideoPage({super.key, required this.videoFile});
+  final Function(String) onDeletePressed;
+  const CachedVideoPage(
+      {super.key,
+      required this.videoId,
+      required this.videoFile,
+      required this.onDeletePressed});
 
   @override
   State<CachedVideoPage> createState() => _CachedVideoPageState();
@@ -33,7 +39,12 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: const MyBottomAppBar(),
+        bottomNavigationBar: VideoBottomAppBar(
+          videoId: widget.videoId,
+          onDeletePressed: () {
+            widget.onDeletePressed(widget.videoId);
+          },
+        ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {},
           label: const Text("Tips"),

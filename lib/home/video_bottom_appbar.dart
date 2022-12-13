@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:surphop/home/menu_page.dart';
 
-class MenuBottomAppBar extends StatelessWidget {
-  const MenuBottomAppBar({super.key});
+class VideoBottomAppBar extends StatelessWidget {
+  final String videoId;
+  final Function() onDeletePressed;
+  const VideoBottomAppBar(
+      {super.key, required this.videoId, required this.onDeletePressed});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +31,11 @@ class MenuBottomAppBar extends StatelessWidget {
             ),
             const Spacer(),
             IconButton(
-              tooltip: 'Search',
-              icon: const Icon(Icons.search),
-              onPressed: () {},
+              tooltip: 'Delete',
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                onDeletePressed();
+              },
             ),
           ],
         ),

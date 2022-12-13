@@ -115,7 +115,7 @@ class _MyTimelinesState extends State<MyTimelines> {
             automaticallyImplyLeading: false,
             centerTitle: true,
             title: const Text("My Timelines")),
-        bottomNavigationBar: const MyBottomAppBar(),
+        bottomNavigationBar: const MenuBottomAppBar(),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: createNewTimeline,
           label: const Text("Add timeline"),

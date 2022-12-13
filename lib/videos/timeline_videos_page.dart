@@ -5,14 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:surphop/home/bottom_appbar.dart';
 import 'package:surphop/videos/video_thumbnail_tile.dart';
-
-import '../home/bottom_appbar.dart';
-import '../timelines/get_timeline_name.dart';
 
 class TimelineVideos extends StatefulWidget {
   final String timelineId;
-  const TimelineVideos({super.key, required this.timelineId});
+  final String timelineName;
+  const TimelineVideos(
+      {super.key, required this.timelineId, required this.timelineName});
 
   @override
   State<TimelineVideos> createState() => _TimelineVideosState();
@@ -24,14 +24,17 @@ class _TimelineVideosState extends State<TimelineVideos> {
   File? _file;
   final ImagePicker _picker = ImagePicker();
 
+  List<String> timelineVideoIds = [];
   List<String> timelineVideoURLs = [];
   Future getTimelineVideos() async {
+    timelineVideoIds = [];
     timelineVideoURLs = [];
     await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
+              timelineVideoIds.add(element.reference.id);
               timelineVideoURLs.add(element['videoUrl']);
             }))));
   }
@@ -69,14 +72,55 @@ class _TimelineVideosState extends State<TimelineVideos> {
     });
   }
 
+  void deleteVideo(videoId) {
+    showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return AlertDialog(
+            title: const Text('Delete Video'),
+            content: const Text("Are you sure?"),
+            actions: <Widget>[
+              MaterialButton(
+                color: Colors.blue,
+                textColor: Colors.white,
+                child: const Text('Yes'),
+                onPressed: () {
+                  FirebaseFirestore.instance
+                      .collection("videos")
+                      .doc(videoId)
+                      .delete()
+                      .then((_) {
+                    if (!mounted) return;
+                    Navigator.pop(context);
+                    setState(() {});
+                  });
+
+                  if (!mounted) return;
+                  Navigator.pop(dialogContext);
+                },
+              ),
+              MaterialButton(
+                color: Colors.grey,
+                textColor: Colors.white,
+                child: const Text('No'),
+                onPressed: () {
+                  if (!mounted) return;
+                  Navigator.pop(dialogContext);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           automaticallyImplyLeading: false,
           centerTitle: true,
-          title: GetTimelineName(timelineId: widget.timelineId)),
-      bottomNavigationBar: const MyBottomAppBar(),
+          title: Text(widget.timelineName)),
+      bottomNavigationBar: const MenuBottomAppBar(),
       body: FutureBuilder(
           future: getTimelineVideos(),
           builder: (context, snapshot) {
@@ -91,7 +135,10 @@ class _TimelineVideosState extends State<TimelineVideos> {
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
                       return VideoThumbnailTile(
-                          videoUrl: timelineVideoURLs[index]);
+                        videoId: timelineVideoIds[index],
+                        videoUrl: timelineVideoURLs[index],
+                        onDeletePressed: deleteVideo,
+                      );
                     },
                     childCount: timelineVideoURLs.length,
                   ))
