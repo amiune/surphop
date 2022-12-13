@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:surphop/home/timeline_tile.dart';
+import 'package:surphop/home/bottom_appbar.dart';
+import 'package:surphop/timelines/timeline_tile.dart';
 
 class MyTimelines extends StatefulWidget {
   const MyTimelines({super.key});
@@ -16,15 +17,57 @@ class _MyTimelinesState extends State<MyTimelines> {
   final _timelineNameController = TextEditingController();
 
   List<String> timelinesIds = [];
+  List<String> timelinesNames = [];
   Future getMyTimelines() async {
     timelinesIds = [];
+    timelinesNames = [];
     await FirebaseFirestore.instance
         .collection('timelines')
         .where('userId', isEqualTo: user.uid.toString())
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
               timelinesIds.add(element.reference.id);
+              timelinesNames.add(element["timelineName"]);
             }))));
+  }
+
+  void deleteTimeline(timelineId, timelineName) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Delete Learning Timeline?'),
+            content: Text(timelineName),
+            actions: <Widget>[
+              MaterialButton(
+                color: Colors.blue,
+                textColor: Colors.white,
+                child: const Text('Yes'),
+                onPressed: () {
+                  FirebaseFirestore.instance
+                      .collection("timelines")
+                      .doc(timelineId)
+                      .delete()
+                      .then((_) {
+                    setState(() {});
+                  });
+
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                },
+              ),
+              MaterialButton(
+                color: Colors.grey,
+                textColor: Colors.white,
+                child: const Text('No'),
+                onPressed: () {
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 
   void createNewTimeline() async {
@@ -39,7 +82,7 @@ class _MyTimelinesState extends State<MyTimelines> {
             ),
             actions: <Widget>[
               MaterialButton(
-                color: Colors.green,
+                color: Colors.blue,
                 textColor: Colors.white,
                 child: const Text('OK'),
                 onPressed: () async {
@@ -69,30 +112,28 @@ class _MyTimelinesState extends State<MyTimelines> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            user.email!,
-            style: const TextStyle(fontSize: 16),
-          ),
-          actions: [
-            GestureDetector(
-                onTap: () {
-                  FirebaseAuth.instance.signOut();
-                  //Navigator.push(context, MaterialPageRoute(builder: (context) {return VideoApp();}));
-                },
-                child: const Icon(Icons.logout))
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
+            automaticallyImplyLeading: false,
+            centerTitle: true,
+            title: const Text("My Timelines")),
+        bottomNavigationBar: const MyBottomAppBar(),
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: createNewTimeline,
-          child: const Icon(Icons.add),
+          label: const Text("Add timeline"),
+          icon: const Icon(Icons.add),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: FutureBuilder(
             future: getMyTimelines(),
             builder: (context, snapshot) {
               return ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 150),
                   itemCount: timelinesIds.length,
                   itemBuilder: (context, index) {
-                    return TimelineTile(timelineId: timelinesIds[index]);
+                    return TimelineTile(
+                      timelineId: timelinesIds[index],
+                      timelineName: timelinesNames[index],
+                      deletePressed: deleteTimeline,
+                    );
                   });
             }));
   }

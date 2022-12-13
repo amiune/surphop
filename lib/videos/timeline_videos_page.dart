@@ -5,9 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:surphop/home/video_thumbnail_tile.dart';
+import 'package:surphop/videos/video_thumbnail_tile.dart';
 
-import 'get_timeline_name.dart';
+import '../home/bottom_appbar.dart';
+import '../timelines/get_timeline_name.dart';
 
 class TimelineVideos extends StatefulWidget {
   final String timelineId;
@@ -71,7 +72,11 @@ class _TimelineVideosState extends State<TimelineVideos> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: GetTimelineName(timelineId: widget.timelineId)),
+      appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: GetTimelineName(timelineId: widget.timelineId)),
+      bottomNavigationBar: const MyBottomAppBar(),
       body: FutureBuilder(
           future: getTimelineVideos(),
           builder: (context, snapshot) {
@@ -92,10 +97,12 @@ class _TimelineVideosState extends State<TimelineVideos> {
                   ))
             ]);
           }),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: videoFromGallery,
-        child: const Icon(Icons.add),
+        label: const Text("Add video"),
+        icon: const Icon(Icons.add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

@@ -124,6 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         )))),
             const SizedBox(height: 30),
+            /*
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -139,6 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                 )
               ],
             )
+            */
           ],
         )))));
   }

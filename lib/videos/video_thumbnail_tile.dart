@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:surphop/home/cachedvideo_page.dart';
+import 'package:surphop/videos/cachedvideo_page.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:surphop/home/cachedvideo_tile.dart';
+import 'package:surphop/videos/cachedvideo_tile.dart';
 
 class VideoThumbnailTile extends StatefulWidget {
   final String videoUrl;

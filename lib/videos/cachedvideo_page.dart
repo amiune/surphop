@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:surphop/home/bottom_appbar.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cache_manager/file.dart';
 
@@ -31,20 +32,24 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _controller.value.isPlaying
-              ? _controller.pause()
-              : _controller.play();
-        });
-      },
-      child: _controller.value.isInitialized
-          ? AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: VideoPlayer(_controller),
-            )
-          : Container(),
-    );
+    return Scaffold(
+        bottomNavigationBar: const MyBottomAppBar(),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {},
+          label: const Text("Tips"),
+          icon: const Icon(Icons.comment),
+        ),
+        body: GestureDetector(
+          onTap: () {
+            setState(() {
+              _controller.value.isPlaying
+                  ? _controller.pause()
+                  : _controller.play();
+            });
+          },
+          child: _controller.value.isInitialized
+              ? VideoPlayer(_controller)
+              : Container(),
+        ));
   }
 }

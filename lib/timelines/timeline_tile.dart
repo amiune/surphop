@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:surphop/home/timeline_videos_page.dart';
-import 'get_timeline_name.dart';
+import 'package:surphop/videos/timeline_videos_page.dart';
 
 class TimelineTile extends StatelessWidget {
   final String timelineId;
-  const TimelineTile({super.key, required this.timelineId});
-
-  Function? deleteTimeline(BuildContext context) {
-    return null;
-  }
+  final String timelineName;
+  final Function(String, String) deletePressed;
+  const TimelineTile(
+      {super.key,
+      required this.timelineId,
+      required this.timelineName,
+      required this.deletePressed});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,9 @@ class TimelineTile extends StatelessWidget {
         child: Slidable(
           endActionPane: ActionPane(motion: const StretchMotion(), children: [
             SlidableAction(
-              onPressed: deleteTimeline,
+              onPressed: (context) {
+                deletePressed(timelineId, timelineName);
+              },
               icon: Icons.delete,
               backgroundColor: Colors.red.shade300,
               borderRadius: BorderRadius.circular(12),
@@ -35,9 +38,9 @@ class TimelineTile extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-                color: Colors.green[400],
+                color: Colors.blue[200],
                 borderRadius: BorderRadius.circular(12)),
-            child: Row(children: [GetTimelineName(timelineId: timelineId)]),
+            child: Row(children: [Text(timelineName)]),
           ),
         ),
       ),
