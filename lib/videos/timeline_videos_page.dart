@@ -25,16 +25,21 @@ class _TimelineVideosState extends State<TimelineVideos> {
   final ImagePicker _picker = ImagePicker();
 
   List<String> timelineVideoIds = [];
+  List<String> timelineVideoUserIds = [];
   List<String> timelineVideoURLs = [];
   Future getTimelineVideos() async {
     timelineVideoIds = [];
+    timelineVideoUserIds = [];
     timelineVideoURLs = [];
     await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
+        .where('deleted', isEqualTo: false)
+        .orderBy('uploadedDate', descending: true)
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
               timelineVideoIds.add(element.reference.id);
+              timelineVideoUserIds.add(element['userId']);
               timelineVideoURLs.add(element['videoUrl']);
             }))));
   }
@@ -48,15 +53,23 @@ class _TimelineVideosState extends State<TimelineVideos> {
           "users/${user.uid}/${widget.timelineId}/$videoId$fileExtension");
       await ref.putFile(_file!);
       String videoUrl = await ref.getDownloadURL();
-      await FirebaseFirestore.instance.collection("videos").add({
+      FirebaseFirestore.instance.collection("videos").add({
         'userId': user.uid,
         'timelineId': widget.timelineId,
         'videoUrl': videoUrl,
-        'uploadDate': DateTime.now().toIso8601String()
+        'uploadedDate': DateTime.now().toIso8601String(),
+        'deleted': false
+      }).then((value) {
+        setState(() {});
       });
-      setState(() {});
+      FirebaseFirestore.instance
+          .collection("timelines")
+          .doc(widget.timelineId)
+          .update({
+        'updatedDate': DateTime.now().toIso8601String(),
+      });
     } catch (e) {
-      print('error occured');
+      //print('error occured');
     }
   }
 
@@ -67,7 +80,7 @@ class _TimelineVideosState extends State<TimelineVideos> {
         _file = File(pickedFile.path);
         uploadFile();
       } else {
-        print('No image selected.');
+        //print('No video selected.');
       }
     });
   }
@@ -88,12 +101,24 @@ class _TimelineVideosState extends State<TimelineVideos> {
                   FirebaseFirestore.instance
                       .collection("videos")
                       .doc(videoId)
+                      .update({'deleted': true}).then(
+                    (_) {
+                      Navigator.pop(context);
+                      setState(() {});
+                    },
+                  );
+
+                  /*
+                  FirebaseFirestore.instance
+                      .collection("videos")
+                      .doc(videoId)
                       .delete()
                       .then((_) {
                     if (!mounted) return;
                     Navigator.pop(context);
                     setState(() {});
                   });
+                  */
 
                   if (!mounted) return;
                   Navigator.pop(dialogContext);
@@ -124,25 +149,33 @@ class _TimelineVideosState extends State<TimelineVideos> {
       body: FutureBuilder(
           future: getTimelineVideos(),
           builder: (context, snapshot) {
-            return CustomScrollView(slivers: <Widget>[
-              SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisSpacing: 1,
-                    mainAxisSpacing: 1,
-                    crossAxisCount: 3,
-                    childAspectRatio: 0.55,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return VideoThumbnailTile(
-                        videoId: timelineVideoIds[index],
-                        videoUrl: timelineVideoURLs[index],
-                        onDeletePressed: deleteVideo,
-                      );
-                    },
-                    childCount: timelineVideoURLs.length,
-                  ))
-            ]);
+            if (timelineVideoURLs.isNotEmpty) {
+              return CustomScrollView(slivers: <Widget>[
+                SliverGrid(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisSpacing: 1,
+                      mainAxisSpacing: 1,
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.55,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        return VideoThumbnailTile(
+                          videoId: timelineVideoIds[index],
+                          videoUserId: timelineVideoUserIds[index],
+                          videoUrl: timelineVideoURLs[index],
+                          onDeletePressed: deleteVideo,
+                        );
+                      },
+                      childCount: timelineVideoURLs.length,
+                    ))
+              ]);
+            } else {
+              return const Center(
+                child: Text("There are no videos in this timeline yet"),
+              );
+            }
           }),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: videoFromGallery,

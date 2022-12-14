@@ -24,6 +24,7 @@ class _MyTimelinesState extends State<MyTimelines> {
     await FirebaseFirestore.instance
         .collection('timelines')
         .where('userId', isEqualTo: user.uid.toString())
+        .orderBy('updatedDate', descending: true)
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
               timelinesIds.add(element.reference.id);
@@ -87,12 +88,14 @@ class _MyTimelinesState extends State<MyTimelines> {
                 child: const Text('OK'),
                 onPressed: () async {
                   if (_timelineNameController.text.trim() != "") {
+                    var currentTime = DateTime.now().toIso8601String();
                     await FirebaseFirestore.instance
                         .collection("timelines")
                         .add({
                       'userId': user.uid,
                       'timelineName': _timelineNameController.text.trim(),
-                      'creationDate': DateTime.now().toIso8601String()
+                      'creationDate': currentTime,
+                      'updatedDate': currentTime,
                     });
                     setState(() {});
                   }

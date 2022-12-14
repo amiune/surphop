@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:surphop/videos/cachedvideo_page.dart';
+import 'package:surphop/videocomments/cachedvideocomment_page.dart';
+import 'package:surphop/videocomments/cachedvideocomment_tile.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:surphop/videos/cachedvideo_tile.dart';
 
-class VideoThumbnailTile extends StatefulWidget {
+class VideoCommentThumbnailTile extends StatefulWidget {
   final String videoId;
-  final String videoUserId;
+  final String userId;
   final String videoUrl;
-  final Function(String) onDeletePressed;
-  const VideoThumbnailTile(
-      {super.key,
-      required this.videoId,
-      required this.videoUserId,
-      required this.videoUrl,
-      required this.onDeletePressed});
+  const VideoCommentThumbnailTile({
+    super.key,
+    required this.videoId,
+    required this.userId,
+    required this.videoUrl,
+  });
 
   @override
-  State<VideoThumbnailTile> createState() => _VideoThumbnailTileState();
+  State<VideoCommentThumbnailTile> createState() =>
+      _VideoCommentThumbnailTileState();
 }
 
-class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
+class _VideoCommentThumbnailTileState extends State<VideoCommentThumbnailTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -28,11 +28,10 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
               .getSingleFile(widget.videoUrl)
               .then((videoFile) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return CachedVideoPage(
+              return CachedVideoCommentPage(
                 videoId: widget.videoId,
-                videoUserId: widget.videoUserId,
+                userId: widget.userId,
                 videoFile: videoFile,
-                onDeletePressed: widget.onDeletePressed,
               );
             }));
           });
@@ -43,7 +42,7 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
                 future: DefaultCacheManager().getSingleFile(widget.videoUrl),
                 builder: ((context, snapshot) {
                   if (snapshot.hasData) {
-                    return CachedVideoTile(videoFile: snapshot.data!);
+                    return CachedVideoCommentTile(videoFile: snapshot.data!);
                   } else {
                     return const CircularProgressIndicator();
                   }

@@ -1,0 +1,127 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:surphop/home/bottom_appbar.dart';
+import 'package:surphop/videocomments/video_comment_thumbnail_tile.dart';
+
+class VideoCommentsPage extends StatefulWidget {
+  final String videoId;
+  final String videoUserId;
+  const VideoCommentsPage(
+      {super.key, required this.videoId, required this.videoUserId});
+
+  @override
+  State<VideoCommentsPage> createState() => _VideoCommentsPageState();
+}
+
+class _VideoCommentsPageState extends State<VideoCommentsPage> {
+  final user = FirebaseAuth.instance.currentUser!;
+  FirebaseStorage storage = FirebaseStorage.instance;
+  File? _file;
+  final ImagePicker _picker = ImagePicker();
+
+  List<String> videoCommentIds = [];
+  List<String> videoCommentUserIds = [];
+  List<String> videoCommentURLs = [];
+  Future getVideoComments() async {
+    videoCommentIds = [];
+    videoCommentUserIds = [];
+    videoCommentURLs = [];
+    await FirebaseFirestore.instance
+        .collection('videocomments')
+        .where('videoId', isEqualTo: widget.videoId)
+        .where('approved', isGreaterThanOrEqualTo: 0)
+        .get()
+        .then(((snapshot) => snapshot.docs.forEach(((element) {
+              videoCommentIds.add(element.reference.id);
+              videoCommentUserIds.add(element['userId']);
+              videoCommentURLs.add(element['videoCommentUrl']);
+            }))));
+  }
+
+  Future uploadFile() async {
+    if (_file == null) return;
+    var fileExtension = _file!.path.substring(_file!.path.lastIndexOf('.'));
+    try {
+      final videoCommentId = DateTime.now().millisecondsSinceEpoch;
+      final ref = FirebaseStorage.instance.ref().child(
+          "videocomments/${widget.videoId}/${user.uid}/$videoCommentId$fileExtension");
+      await ref.putFile(_file!);
+      String videoUrl = await ref.getDownloadURL();
+      await FirebaseFirestore.instance.collection("videocomments").add({
+        'videoId': widget.videoId,
+        'videoUserId': widget.videoUserId,
+        'commentUserId': user.uid,
+        'videoCommentUrl': videoUrl,
+        'uploadedDate': DateTime.now().toIso8601String(),
+        'approved': 0,
+        'reportedText': ""
+      });
+      setState(() {});
+    } catch (e) {
+      //print('error occured');
+    }
+  }
+
+  Future videoFromGallery() async {
+    final pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _file = File(pickedFile.path);
+        uploadFile();
+      } else {
+        //print('No video selected.');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: const Text("Video Comments")),
+      bottomNavigationBar: const MenuBottomAppBar(),
+      body: FutureBuilder(
+          future: getVideoComments(),
+          builder: (context, snapshot) {
+            if (videoCommentURLs.isNotEmpty) {
+              return CustomScrollView(slivers: <Widget>[
+                SliverGrid(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisSpacing: 1,
+                      mainAxisSpacing: 1,
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.55,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        return VideoCommentThumbnailTile(
+                            videoId: videoCommentIds[index],
+                            userId: videoCommentUserIds[index],
+                            videoUrl: videoCommentURLs[index]);
+                      },
+                      childCount: videoCommentURLs.length,
+                    ))
+              ]);
+            } else {
+              return const Center(
+                child: Text("There are no comments for this video yet"),
+              );
+            }
+          }),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: videoFromGallery,
+        label: const Text("Add video comment"),
+        icon: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+}

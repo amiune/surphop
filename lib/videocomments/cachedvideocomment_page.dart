@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:surphop/home/video_bottom_appbar.dart';
-import 'package:surphop/videocomments/video_comments_page.dart';
+import 'package:surphop/home/video_comment_bottom_appbar.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cache_manager/file.dart';
 
-class CachedVideoPage extends StatefulWidget {
+class CachedVideoCommentPage extends StatefulWidget {
   final String videoId;
-  final String videoUserId;
+  final String userId;
   final File videoFile;
-  final Function(String) onDeletePressed;
-  const CachedVideoPage(
+  const CachedVideoCommentPage(
       {super.key,
       required this.videoId,
-      required this.videoUserId,
-      required this.videoFile,
-      required this.onDeletePressed});
+      required this.userId,
+      required this.videoFile});
 
   @override
-  State<CachedVideoPage> createState() => _CachedVideoPageState();
+  State<CachedVideoCommentPage> createState() => _CachedVideoCommentPageState();
 }
 
-class _CachedVideoPageState extends State<CachedVideoPage> {
+class _CachedVideoCommentPageState extends State<CachedVideoCommentPage> {
   late VideoPlayerController _controller;
 
   @override
@@ -42,23 +39,9 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: VideoBottomAppBar(
+        bottomNavigationBar: VideoCommentBottomAppBar(
           videoId: widget.videoId,
-          onDeletePressed: () {
-            widget.onDeletePressed(widget.videoId);
-          },
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return VideoCommentsPage(
-                videoId: widget.videoId,
-                videoUserId: widget.videoUserId,
-              );
-            }));
-          },
-          label: const Text("Tips"),
-          icon: const Icon(Icons.comment),
+          videoUserId: widget.userId,
         ),
         body: GestureDetector(
           onTap: () {
