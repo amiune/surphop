@@ -4,7 +4,10 @@ import 'package:video_player/video_player.dart';
 
 class CachedVideoTile extends StatefulWidget {
   final File videoFile;
-  const CachedVideoTile({super.key, required this.videoFile});
+  const CachedVideoTile({
+    super.key,
+    required this.videoFile,
+  });
 
   @override
   State<CachedVideoTile> createState() => _CachedVideoTileState();
@@ -38,7 +41,7 @@ class _CachedVideoTileState extends State<CachedVideoTile> {
         child: VideoPlayer(_controller),
       );
     } else {
-      return Container();
+      return const Center(child: Text("Loading..."));
     }
   }
 }

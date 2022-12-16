@@ -107,18 +107,6 @@ class _TimelineVideosState extends State<TimelineVideos> {
                     },
                   );
 
-                  /*
-                  FirebaseFirestore.instance
-                      .collection("videos")
-                      .doc(videoId)
-                      .delete()
-                      .then((_) {
-                    if (!mounted) return;
-                    Navigator.pop(context);
-                    setState(() {});
-                  });
-                  */
-
                   if (!mounted) return;
                   Navigator.pop(dialogContext);
                 },

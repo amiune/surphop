@@ -8,12 +8,13 @@ class VideoThumbnailTile extends StatefulWidget {
   final String videoUserId;
   final String videoUrl;
   final Function(String) onDeletePressed;
-  const VideoThumbnailTile(
-      {super.key,
-      required this.videoId,
-      required this.videoUserId,
-      required this.videoUrl,
-      required this.onDeletePressed});
+  const VideoThumbnailTile({
+    super.key,
+    required this.videoId,
+    required this.videoUserId,
+    required this.videoUrl,
+    required this.onDeletePressed,
+  });
 
   @override
   State<VideoThumbnailTile> createState() => _VideoThumbnailTileState();
@@ -43,9 +44,11 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
                 future: DefaultCacheManager().getSingleFile(widget.videoUrl),
                 builder: ((context, snapshot) {
                   if (snapshot.hasData) {
-                    return CachedVideoTile(videoFile: snapshot.data!);
+                    return CachedVideoTile(
+                      videoFile: snapshot.data!,
+                    );
                   } else {
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
                   }
                 }))));
   }
