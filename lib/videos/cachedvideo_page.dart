@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:surphop/home/video_bottom_appbar.dart';
-import 'package:surphop/videocomments/video_comments_page.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cache_manager/file.dart';
 
@@ -42,12 +40,31 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: VideoBottomAppBar(
-          videoId: widget.videoId,
-          onDeletePressed: () {
-            widget.onDeletePressed(widget.videoId);
-          },
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.blue,
+          child: IconTheme(
+            data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                const Spacer(),
+                IconButton(
+                  tooltip: 'Delete',
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    widget.onDeletePressed(widget.videoId);
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
+        /*
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -57,9 +74,10 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
               );
             }));
           },
-          label: const Text("Tips"),
+          label: const Text("Comments"),
           icon: const Icon(Icons.comment),
         ),
+        */
         body: GestureDetector(
           onTap: () {
             setState(() {

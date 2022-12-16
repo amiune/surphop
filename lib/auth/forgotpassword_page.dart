@@ -28,7 +28,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 content: Text("Password link sent! Check your email!"));
           });
     } on FirebaseAuthException catch (e) {
-      print(e);
+      //print(e);
       showDialog(
           context: context,
           builder: (context) {

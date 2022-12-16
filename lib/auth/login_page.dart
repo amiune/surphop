@@ -46,13 +46,16 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.school_rounded, size: 100),
+            const Icon(Icons.video_library_rounded, size: 100),
             const SizedBox(height: 75),
             const SizedBox(height: 25),
-            Text("Hello Again", style: GoogleFonts.bebasNeue(fontSize: 52)),
-            //const Text("Hello Again!"),
+            Text("surphop", style: GoogleFonts.bebasNeue(fontSize: 52)),
             const SizedBox(height: 10),
-            const Text("Welcome back!", style: TextStyle(fontSize: 24)),
+            const Text(
+              "Save your progress \n and help other people",
+              style: TextStyle(fontSize: 24),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 30),
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -112,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                            color: Colors.green[200],
+                            color: Colors.blue[200],
                             borderRadius: BorderRadius.circular(12)),
                         child: const Center(
                           child: Text(

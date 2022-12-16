@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:surphop/home/bottom_appbar.dart';
 import 'package:surphop/videos/video_thumbnail_tile.dart';
 
 class TimelineVideos extends StatefulWidget {
@@ -145,7 +144,22 @@ class _TimelineVideosState extends State<TimelineVideos> {
           automaticallyImplyLeading: false,
           centerTitle: true,
           title: Text(widget.timelineName)),
-      bottomNavigationBar: const MenuBottomAppBar(),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.blue,
+        child: IconTheme(
+          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
       body: FutureBuilder(
           future: getTimelineVideos(),
           builder: (context, snapshot) {

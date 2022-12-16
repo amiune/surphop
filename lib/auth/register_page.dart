@@ -38,13 +38,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.school_outlined, size: 100),
+            const Icon(Icons.video_library_rounded, size: 100),
             const SizedBox(height: 75),
             const SizedBox(height: 25),
             Text("Register Now", style: GoogleFonts.bebasNeue(fontSize: 52)),
             //const Text("Hello Again!"),
             const SizedBox(height: 10),
-            const Text("and start learning with peers",
+            const Text("and start saving your progress",
                 style: TextStyle(fontSize: 24)),
             const SizedBox(height: 30),
             Padding(
@@ -85,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                            color: Colors.green[200],
+                            color: Colors.blue[200],
                             borderRadius: BorderRadius.circular(12)),
                         child: const Center(
                           child: Text(

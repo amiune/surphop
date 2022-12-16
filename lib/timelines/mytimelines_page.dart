@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:surphop/home/bottom_appbar.dart';
+import 'package:surphop/home/menu_page.dart';
 import 'package:surphop/timelines/timeline_tile.dart';
 
 class MyTimelines extends StatefulWidget {
@@ -118,7 +118,25 @@ class _MyTimelinesState extends State<MyTimelines> {
             automaticallyImplyLeading: false,
             centerTitle: true,
             title: const Text("My Timelines")),
-        bottomNavigationBar: const MenuBottomAppBar(),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.blue,
+          child: IconTheme(
+            data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (newContext) {
+                      return const MenuPage();
+                    }));
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: createNewTimeline,
           label: const Text("Add timeline"),

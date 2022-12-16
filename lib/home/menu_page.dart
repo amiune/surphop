@@ -1,15 +1,64 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:surphop/home/bottom_appbar.dart';
 
-class MenuPage extends StatelessWidget {
+class MenuPage extends StatefulWidget {
+  const MenuPage({super.key});
+
+  @override
+  State<MenuPage> createState() => _MenuPageState();
+}
+
+class _MenuPageState extends State<MenuPage> {
   final user = FirebaseAuth.instance.currentUser!;
-  MenuPage({super.key});
+
+  void emailVerificationSent(context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Email Verification Sent'),
+            content: const Text("Check your email inbox"),
+            actions: <Widget>[
+              MaterialButton(
+                color: Colors.blue,
+                textColor: Colors.white,
+                child: const Text('Ok'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const MenuBottomAppBar(),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.blue,
+        child: IconTheme(
+          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              const Spacer(),
+              /*
+            IconButton(
+              tooltip: 'Search',
+              icon: const Icon(Icons.search),
+              onPressed: () {},
+            ),
+            */
+            ],
+          ),
+        ),
+      ),
       body: ListView(padding: EdgeInsets.zero, children: [
         SizedBox(
             height: 150.0,
@@ -20,8 +69,14 @@ class MenuPage extends StatelessWidget {
                 child: user.displayName != null && user.displayName != ""
                     ? Text(user.displayName!)
                     : Text(user.email!))),
-        ListTile(title: const Text("Verify Email"), onTap: () {}),
-        ListTile(title: const Text("Profile"), onTap: () {}),
+        if (user.emailVerified == false)
+          ListTile(
+              title: const Text("Verify Email"),
+              onTap: () {
+                user.sendEmailVerification().then((value) {
+                  emailVerificationSent(context);
+                });
+              }),
         ListTile(
             title: const Text('Sign Out'),
             onTap: () {
