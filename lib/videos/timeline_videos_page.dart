@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:surphop/videos/cachedvideo_page.dart';
 import 'package:surphop/videos/video_thumbnail_tile.dart';
 
 class TimelineVideos extends StatefulWidget {
@@ -163,12 +165,35 @@ class _TimelineVideosState extends State<TimelineVideos> {
                     ),
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
-                        return VideoThumbnailTile(
-                          videoId: timelineVideoIds[index],
-                          videoUserId: timelineVideoUserIds[index],
-                          videoUrl: timelineVideoURLs[index],
-                          onDeletePressed: deleteVideo,
-                        );
+                        return FutureBuilder(
+                            future: DefaultCacheManager()
+                                .getSingleFile(timelineVideoURLs[index]),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return CachedVideoPage(
+                                          videoId: timelineVideoIds[index],
+                                          videoUserId:
+                                              timelineVideoUserIds[index],
+                                          videoFile: snapshot.data!,
+                                          onDeletePressed: deleteVideo,
+                                        );
+                                      }));
+                                    },
+                                    child: VideoThumbnailTile(
+                                      videoId: timelineVideoIds[index],
+                                      videoUserId: timelineVideoUserIds[index],
+                                      videoUrl: timelineVideoURLs[index],
+                                      videoFile: snapshot.data!,
+                                      onDeletePressed: deleteVideo,
+                                    ));
+                              } else {
+                                return const Center(child: Text("timeline..."));
+                              }
+                            });
                       },
                       childCount: timelineVideoURLs.length,
                     ))

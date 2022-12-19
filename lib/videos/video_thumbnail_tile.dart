@@ -1,18 +1,20 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:surphop/videos/cachedvideo_page.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:surphop/videos/cachedvideo_tile.dart';
+import 'package:flutter_cache_manager/file.dart';
+import 'package:video_player/video_player.dart';
 
 class VideoThumbnailTile extends StatefulWidget {
   final String videoId;
   final String videoUserId;
   final String videoUrl;
+  final File videoFile;
   final Function(String) onDeletePressed;
   const VideoThumbnailTile({
     super.key,
     required this.videoId,
     required this.videoUserId,
     required this.videoUrl,
+    required this.videoFile,
     required this.onDeletePressed,
   });
 
@@ -21,35 +23,35 @@ class VideoThumbnailTile extends StatefulWidget {
 }
 
 class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
+  late VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    //_controller = VideoPlayerController.file(widget.videoFile);
+    _controller = VideoPlayerController.network(widget.videoUrl);
+    _controller.initialize().then((_) {
+      // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {
-          DefaultCacheManager()
-              .getSingleFile(widget.videoUrl)
-              .then((videoFile) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return CachedVideoPage(
-                videoId: widget.videoId,
-                videoUserId: widget.videoUserId,
-                videoFile: videoFile,
-                onDeletePressed: widget.onDeletePressed,
-              );
-            }));
-          });
-        },
-        child: Container(
-            padding: const EdgeInsets.all(0),
-            child: FutureBuilder(
-                future: DefaultCacheManager().getSingleFile(widget.videoUrl),
-                builder: ((context, snapshot) {
-                  if (snapshot.hasData) {
-                    return CachedVideoTile(
-                      videoFile: snapshot.data!,
-                    );
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                }))));
+    if (_controller.value.isInitialized) {
+      return AspectRatio(
+        aspectRatio: _controller.value.aspectRatio,
+        child: VideoPlayer(_controller),
+      );
+    } else {
+      return const Center(child: Text("tile..."));
+    }
   }
 }
