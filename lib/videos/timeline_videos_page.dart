@@ -12,8 +12,17 @@ import 'package:surphop/videos/video_thumbnail_tile.dart';
 class TimelineVideos extends StatefulWidget {
   final String timelineId;
   final String timelineName;
-  const TimelineVideos(
-      {super.key, required this.timelineId, required this.timelineName});
+  final List<String> timelineVideoIds;
+  final List<String> timelineVideoUserIds;
+  final List<String> timelineVideoURLs;
+  const TimelineVideos({
+    super.key,
+    required this.timelineId,
+    required this.timelineName,
+    required this.timelineVideoIds,
+    required this.timelineVideoUserIds,
+    required this.timelineVideoURLs,
+  });
 
   @override
   State<TimelineVideos> createState() => _TimelineVideosState();
@@ -24,26 +33,6 @@ class _TimelineVideosState extends State<TimelineVideos> {
   FirebaseStorage storage = FirebaseStorage.instance;
   File? _file;
   final ImagePicker _picker = ImagePicker();
-
-  List<String> timelineVideoIds = [];
-  List<String> timelineVideoUserIds = [];
-  List<String> timelineVideoURLs = [];
-  Future getTimelineVideos() async {
-    timelineVideoIds = [];
-    timelineVideoUserIds = [];
-    timelineVideoURLs = [];
-    await FirebaseFirestore.instance
-        .collection('videos')
-        .where('timelineId', isEqualTo: widget.timelineId)
-        .where('deleted', isEqualTo: false)
-        .orderBy('uploadedDate', descending: true)
-        .get()
-        .then(((snapshot) => snapshot.docs.forEach(((element) {
-              timelineVideoIds.add(element.reference.id);
-              timelineVideoUserIds.add(element['userId']);
-              timelineVideoURLs.add(element['videoUrl']);
-            }))));
-  }
 
   Future uploadFile() async {
     if (_file == null) return;
@@ -150,60 +139,55 @@ class _TimelineVideosState extends State<TimelineVideos> {
           ),
         ),
       ),
-      body: FutureBuilder(
-          future: getTimelineVideos(),
-          builder: (context, snapshot) {
-            if (timelineVideoURLs.isNotEmpty) {
-              return CustomScrollView(slivers: <Widget>[
-                SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisSpacing: 1,
-                      mainAxisSpacing: 1,
-                      crossAxisCount: 3,
-                      childAspectRatio: 0.55,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return FutureBuilder(
-                            future: DefaultCacheManager()
-                                .getSingleFile(timelineVideoURLs[index]),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) {
-                                        return CachedVideoPage(
-                                          videoId: timelineVideoIds[index],
-                                          videoUserId:
-                                              timelineVideoUserIds[index],
-                                          videoFile: snapshot.data!,
-                                          onDeletePressed: deleteVideo,
-                                        );
-                                      }));
-                                    },
-                                    child: VideoThumbnailTile(
-                                      videoId: timelineVideoIds[index],
-                                      videoUserId: timelineVideoUserIds[index],
-                                      videoUrl: timelineVideoURLs[index],
-                                      videoFile: snapshot.data!,
-                                      onDeletePressed: deleteVideo,
-                                    ));
-                              } else {
-                                return const Center(child: Text("timeline..."));
-                              }
-                            });
-                      },
-                      childCount: timelineVideoURLs.length,
-                    ))
-              ]);
-            } else {
-              return const Center(
-                child: Text("There are no videos in this timeline yet"),
-              );
-            }
-          }),
+      body: (widget.timelineVideoURLs.isNotEmpty)
+          ? CustomScrollView(slivers: <Widget>[
+              SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 1,
+                    crossAxisCount: 3,
+                    childAspectRatio: 0.55,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return FutureBuilder(
+                          future: DefaultCacheManager()
+                              .getSingleFile(widget.timelineVideoURLs[index]),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return CachedVideoPage(
+                                        videoId: widget.timelineVideoIds[index],
+                                        videoUserId:
+                                            widget.timelineVideoUserIds[index],
+                                        videoFile: snapshot.data!,
+                                        onDeletePressed: deleteVideo,
+                                      );
+                                    }));
+                                  },
+                                  child: VideoThumbnailTile(
+                                    videoId: widget.timelineVideoIds[index],
+                                    videoUserId:
+                                        widget.timelineVideoUserIds[index],
+                                    videoUrl: widget.timelineVideoURLs[index],
+                                    videoFile: snapshot.data!,
+                                    onDeletePressed: deleteVideo,
+                                  ));
+                            } else {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                          });
+                    },
+                    childCount: widget.timelineVideoURLs.length,
+                  ))
+            ])
+          : const Center(
+              child: Text("There are no videos in this timeline yet"),
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: videoFromGallery,
         label: const Text("Add video"),

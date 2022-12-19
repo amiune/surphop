@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/file.dart';
 import 'package:video_player/video_player.dart';
@@ -29,8 +28,7 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
   void initState() {
     super.initState();
 
-    //_controller = VideoPlayerController.file(widget.videoFile);
-    _controller = VideoPlayerController.network(widget.videoUrl);
+    _controller = VideoPlayerController.file(widget.videoFile);
     _controller.initialize().then((_) {
       // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
       setState(() {});
@@ -51,7 +49,7 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
         child: VideoPlayer(_controller),
       );
     } else {
-      return const Center(child: Text("tile..."));
+      return const Center(child: CircularProgressIndicator());
     }
   }
 }
