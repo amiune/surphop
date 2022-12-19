@@ -191,7 +191,8 @@ class _TimelineVideosState extends State<TimelineVideos> {
                                       onDeletePressed: deleteVideo,
                                     ));
                               } else {
-                                return const Center(child: Text("timeline..."));
+                                return const Center(
+                                    child: CircularProgressIndicator());
                               }
                             });
                       },

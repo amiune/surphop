@@ -27,6 +27,8 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
     _controller = VideoPlayerController.file(widget.videoFile);
     _controller.initialize().then((_) {
       // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+      _controller.play();
+      _controller.setLooping(true);
       setState(() {});
     });
   }
