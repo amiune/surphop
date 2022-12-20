@@ -14,7 +14,7 @@ class _AuthPageState extends State<AuthPage> {
 
   void toggleScreens() {
     setState(() {
-      //showLoginPage = !showLoginPage;
+      showLoginPage = !showLoginPage;
     });
   }
 
