@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:surphop/menu/menu_page.dart';
+import 'package:surphop/search/search_delegate.dart';
 import 'package:surphop/timelines/timeline_tile.dart';
 
 class MyTimelines extends StatefulWidget {
@@ -131,6 +132,17 @@ class _MyTimelinesState extends State<MyTimelines> {
                         MaterialPageRoute(builder: (newContext) {
                       return const MenuPage();
                     }));
+                  },
+                ),
+                const Spacer(),
+                IconButton(
+                  tooltip: 'Search',
+                  icon: const Icon(Icons.search),
+                  onPressed: () async {
+                    final results = await showSearch(
+                        context: context,
+                        delegate: CustomSearchDelegate(),
+                        query: "");
                   },
                 ),
               ],
