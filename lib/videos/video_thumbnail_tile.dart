@@ -6,14 +6,12 @@ import 'package:video_player/video_player.dart';
 
 class VideoThumbnailTile extends StatefulWidget {
   final String videoId;
-  final String videoUserId;
   final String videoUrl;
   final File videoFile;
   final Function(String) onDeletePressed;
   const VideoThumbnailTile({
     super.key,
     required this.videoId,
-    required this.videoUserId,
     required this.videoUrl,
     required this.videoFile,
     required this.onDeletePressed,

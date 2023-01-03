@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:surphop/videocomments/video_comments_page.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cache_manager/file.dart';
 
 class CachedVideoPage extends StatefulWidget {
   final String videoId;
-  final String videoUserId;
   final File videoFile;
   final Function(String) onDeletePressed;
   const CachedVideoPage(
       {super.key,
       required this.videoId,
-      required this.videoUserId,
       required this.videoFile,
       required this.onDeletePressed});
 
@@ -66,20 +65,17 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
             ),
           ),
         ),
-        /*
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return VideoCommentsPage(
                 videoId: widget.videoId,
-                videoUserId: widget.videoUserId,
               );
             }));
           },
           label: const Text("Comments"),
           icon: const Icon(Icons.comment),
         ),
-        */
         body: GestureDetector(
           onTap: () {
             setState(() {

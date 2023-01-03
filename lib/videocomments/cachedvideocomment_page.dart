@@ -4,13 +4,9 @@ import 'package:flutter_cache_manager/file.dart';
 
 class CachedVideoCommentPage extends StatefulWidget {
   final String videoId;
-  final String userId;
   final File videoFile;
   const CachedVideoCommentPage(
-      {super.key,
-      required this.videoId,
-      required this.userId,
-      required this.videoFile});
+      {super.key, required this.videoId, required this.videoFile});
 
   @override
   State<CachedVideoCommentPage> createState() => _CachedVideoCommentPageState();
@@ -25,6 +21,8 @@ class _CachedVideoCommentPageState extends State<CachedVideoCommentPage> {
     _controller = VideoPlayerController.file(widget.videoFile);
     _controller.initialize().then((_) {
       // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+      _controller.play();
+      _controller.setLooping(true);
       setState(() {});
     });
   }
@@ -50,6 +48,7 @@ class _CachedVideoCommentPageState extends State<CachedVideoCommentPage> {
                     Navigator.pop(context);
                   },
                 ),
+                const Spacer(),
               ],
             ),
           ),

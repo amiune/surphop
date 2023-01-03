@@ -4,14 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:surphop/videocomments/video_comment_thumbnail_tile.dart';
+import 'package:surphop/videocomments/cachedvideocomment_page.dart';
+import 'package:surphop/videos/video_thumbnail_tile.dart';
 
 class VideoCommentsPage extends StatefulWidget {
   final String videoId;
-  final String videoUserId;
-  const VideoCommentsPage(
-      {super.key, required this.videoId, required this.videoUserId});
+  const VideoCommentsPage({super.key, required this.videoId});
 
   @override
   State<VideoCommentsPage> createState() => _VideoCommentsPageState();
@@ -53,8 +53,7 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
       String videoUrl = await ref.getDownloadURL();
       await FirebaseFirestore.instance.collection("videocomments").add({
         'videoId': widget.videoId,
-        'videoUserId': widget.videoUserId,
-        'commentUserId': user.uid,
+        'userId': user.uid,
         'videoCommentUrl': videoUrl,
         'uploadedDate': DateTime.now().toIso8601String(),
         'approved': 0,
@@ -62,7 +61,7 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
       });
       setState(() {});
     } catch (e) {
-      //print('error occured');
+      //print(e.toString());
     }
   }
 
@@ -116,10 +115,32 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
                     ),
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
-                        return VideoCommentThumbnailTile(
-                            videoId: videoCommentIds[index],
-                            userId: videoCommentUserIds[index],
-                            videoUrl: videoCommentURLs[index]);
+                        return FutureBuilder(
+                            future: DefaultCacheManager()
+                                .getSingleFile(videoCommentURLs[index]),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return CachedVideoCommentPage(
+                                          videoId: videoCommentIds[index],
+                                          videoFile: snapshot.data!,
+                                        );
+                                      }));
+                                    },
+                                    child: VideoThumbnailTile(
+                                      videoId: videoCommentIds[index],
+                                      videoUrl: videoCommentURLs[index],
+                                      videoFile: snapshot.data!,
+                                      onDeletePressed: (_) {},
+                                    ));
+                              } else {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                            });
                       },
                       childCount: videoCommentURLs.length,
                     ))

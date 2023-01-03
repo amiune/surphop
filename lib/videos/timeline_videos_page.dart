@@ -26,11 +26,9 @@ class _TimelineVideosState extends State<TimelineVideos> {
   final ImagePicker _picker = ImagePicker();
 
   List<String> timelineVideoIds = [];
-  List<String> timelineVideoUserIds = [];
   List<String> timelineVideoURLs = [];
   Future getTimelineVideos() async {
     timelineVideoIds = [];
-    timelineVideoUserIds = [];
     timelineVideoURLs = [];
     await FirebaseFirestore.instance
         .collection('videos')
@@ -40,7 +38,6 @@ class _TimelineVideosState extends State<TimelineVideos> {
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
               timelineVideoIds.add(element.reference.id);
-              timelineVideoUserIds.add(element['userId']);
               timelineVideoURLs.add(element['videoUrl']);
             }))));
   }
@@ -176,8 +173,6 @@ class _TimelineVideosState extends State<TimelineVideos> {
                                           MaterialPageRoute(builder: (context) {
                                         return CachedVideoPage(
                                           videoId: timelineVideoIds[index],
-                                          videoUserId:
-                                              timelineVideoUserIds[index],
                                           videoFile: snapshot.data!,
                                           onDeletePressed: deleteVideo,
                                         );
@@ -185,7 +180,6 @@ class _TimelineVideosState extends State<TimelineVideos> {
                                     },
                                     child: VideoThumbnailTile(
                                       videoId: timelineVideoIds[index],
-                                      videoUserId: timelineVideoUserIds[index],
                                       videoUrl: timelineVideoURLs[index],
                                       videoFile: snapshot.data!,
                                       onDeletePressed: deleteVideo,
