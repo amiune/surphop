@@ -1,10 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-List<String> allNames = ["cafe", "guitarra", "gym", "user"];
+import 'package:surphop/search/timeline_searchresult_page.dart';
+import 'package:surphop/search/usertimelines_searchresult_page.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
-  List<String> searchResult = List.empty(growable: true);
-
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -27,25 +26,111 @@ class CustomSearchDelegate extends SearchDelegate {
     );
   }
 
+  Future<String> getUserByEmail(String email) async {
+    String searchedUserId = "";
+    await FirebaseFirestore.instance
+        .collection('emailtouid')
+        .where('email', isEqualTo: email)
+        .get()
+        .then(((snapshot) => snapshot.docs.forEach(((element) {
+              searchedUserId = element["userId"];
+            }))));
+    return searchedUserId;
+  }
+
+  Future<Map<String, String>> getTimelinesByName(
+      String timelineSearchTerm) async {
+    Map<String, String> searchResults = {};
+    await FirebaseFirestore.instance
+        .collection('timelines')
+        .where('tags', arrayContains: timelineSearchTerm.toLowerCase())
+        .get()
+        .then(((snapshot) => snapshot.docs.forEach(((element) {
+              searchResults[element.reference.id] = element["timelineName"];
+            }))));
+
+    return searchResults;
+  }
+
   @override
   Widget buildResults(BuildContext context) {
-    searchResult.clear();
-    searchResult =
-        allNames.where((element) => element.startsWith(query)).toList();
-    return Container(
-      margin: const EdgeInsets.all(20),
-      child: ListView(
-          padding: const EdgeInsets.only(top: 8, bottom: 8),
-          scrollDirection: Axis.vertical,
-          children: List.generate(searchResult.length, (index) {
-            var item = searchResult[index];
-            return Card(
-              color: Colors.green,
-              child: Container(
-                  padding: const EdgeInsets.all(16), child: Text(item)),
+    if (query.contains("@")) {
+      return FutureBuilder<String>(
+          future: getUserByEmail(query),
+          builder: ((context, snapshot) {
+            return Container(
+              margin: const EdgeInsets.all(20),
+              child: snapshot.data != null && snapshot.data! != ""
+                  ? Card(
+                      color: Colors.blue[200],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return UserTimelines(
+                              userId: snapshot.data!,
+                              userEmail: query,
+                            );
+                          }));
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                                color: Colors.blue[200],
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Text(query)),
+                      ),
+                    )
+                  : const Center(
+                      child: Text(
+                      "User email not found",
+                      style: TextStyle(fontSize: 30),
+                    )),
             );
-          })),
-    );
+          }));
+    } else {
+      return FutureBuilder<Map<String, String>>(
+          future: getTimelinesByName(query),
+          builder: ((context, snapshot) {
+            return Container(
+              margin: const EdgeInsets.all(20),
+              child: snapshot.data != null && snapshot.data!.isNotEmpty
+                  ? ListView(
+                      padding: const EdgeInsets.only(top: 8, bottom: 8),
+                      scrollDirection: Axis.vertical,
+                      children: List.generate(snapshot.data!.length, (index) {
+                        var item = snapshot.data!.values.elementAt(index);
+                        return Card(
+                          color: Colors.blue[200],
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return PublicTimelineVideos(
+                                  timelineId:
+                                      snapshot.data!.keys.elementAt(index),
+                                  timelineName:
+                                      snapshot.data!.values.elementAt(index),
+                                );
+                              }));
+                            },
+                            child: Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                    color: Colors.blue[200],
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Text(item)),
+                          ),
+                        );
+                      }))
+                  : const Center(
+                      child: Text(
+                      "No results",
+                      style: TextStyle(fontSize: 30),
+                    )),
+            );
+          }));
+    }
   }
 
   @override

@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:surphop/search/search_delegate.dart';
+import 'package:surphop/timelines/following_timelines_page.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -47,14 +49,6 @@ class _MenuPageState extends State<MenuPage> {
                   Navigator.pop(context);
                 },
               ),
-              const Spacer(),
-              /*
-            IconButton(
-              tooltip: 'Search',
-              icon: const Icon(Icons.search),
-              onPressed: () {},
-            ),
-            */
             ],
           ),
         ),
@@ -77,6 +71,21 @@ class _MenuPageState extends State<MenuPage> {
                   emailVerificationSent(context);
                 });
               }),
+        ListTile(
+            title: const Text("Following"),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (newContext) {
+                return const FollowingTimelines();
+              }));
+            }),
+        ListTile(
+            title: const Text("Search"),
+            onTap: () async {
+              await showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(),
+                  query: "");
+            }),
         ListTile(
             title: const Text('Sign Out'),
             onTap: () {

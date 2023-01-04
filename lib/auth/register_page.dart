@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,9 +17,16 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future registerUser() async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim());
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text.trim())
+          .then((userCredential) async {
+        await FirebaseFirestore.instance.collection("emailtouid").add({
+          'email': _emailController.text.trim(),
+          'userId': userCredential.user!.uid,
+        });
+      });
     } on FirebaseAuthException catch (e) {
       showDialog(
           context: context,
