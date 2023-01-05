@@ -44,8 +44,15 @@ class _TimelineVideosState extends State<TimelineVideos> {
 
   Future uploadFile() async {
     if (_file == null) return;
-    var fileExtension = _file!.path.substring(_file!.path.lastIndexOf('.'));
+
     try {
+      var fileExtension = _file!.path.substring(_file!.path.lastIndexOf('.'));
+      int sizeInBytes = _file!.lengthSync();
+      double sizeInMb = sizeInBytes / (1024 * 1024);
+      if (sizeInMb > 100) {
+        throw Exception("File is to big. Needs to be less than 100MB");
+      }
+
       final videoId = DateTime.now().millisecondsSinceEpoch;
       final ref = FirebaseStorage.instance.ref().child(
           "users/${user.uid}/${widget.timelineId}/$videoId$fileExtension");
@@ -67,7 +74,24 @@ class _TimelineVideosState extends State<TimelineVideos> {
         'updatedDate': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      //print('error occured');
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Error!'),
+              content: Text(e.toString()),
+              actions: <Widget>[
+                MaterialButton(
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  child: const Text('Ok'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
     }
   }
 
