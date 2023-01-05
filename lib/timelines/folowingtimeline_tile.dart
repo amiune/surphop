@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:surphop/videos/timeline_videos_page.dart';
+import 'package:surphop/search/timeline_searchresult_page.dart';
 
-class TimelineTile extends StatelessWidget {
+class FollowingTimelineTile extends StatelessWidget {
+  final String followingTimelineId;
+  final String followingTimelineName;
   final String timelineId;
-  final String timelineName;
   final Function(String, String) editPressed;
   final Function(String, String) deletePressed;
-  const TimelineTile(
+  const FollowingTimelineTile(
       {super.key,
+      required this.followingTimelineId,
+      required this.followingTimelineName,
       required this.timelineId,
-      required this.timelineName,
       required this.editPressed,
       required this.deletePressed});
 
@@ -19,9 +21,9 @@ class TimelineTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return TimelineVideos(
+          return PublicTimelineVideos(
             timelineId: timelineId,
-            timelineName: timelineName,
+            timelineName: followingTimelineName,
           );
         }));
       },
@@ -31,7 +33,7 @@ class TimelineTile extends StatelessWidget {
           endActionPane: ActionPane(motion: const StretchMotion(), children: [
             SlidableAction(
               onPressed: (context) {
-                editPressed(timelineId, timelineName);
+                editPressed(followingTimelineId, followingTimelineName);
               },
               icon: Icons.create,
               backgroundColor: Colors.grey.shade600,
@@ -39,7 +41,7 @@ class TimelineTile extends StatelessWidget {
             ),
             SlidableAction(
               onPressed: (context) {
-                deletePressed(timelineId, timelineName);
+                deletePressed(followingTimelineId, followingTimelineName);
               },
               icon: Icons.delete,
               backgroundColor: Colors.red.shade300,
@@ -51,7 +53,7 @@ class TimelineTile extends StatelessWidget {
             decoration: BoxDecoration(
                 color: Colors.blue[200],
                 borderRadius: BorderRadius.circular(12)),
-            child: Row(children: [Text(timelineName)]),
+            child: Row(children: [Text(followingTimelineName)]),
           ),
         ),
       ),

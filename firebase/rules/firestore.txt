@@ -3,15 +3,28 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
       allow read;
-      match /timelines/{timelineId} {
-        allow delete:
-          if request.auth != null
-          && get(/databases/$(database)/documents/timelines/$(timelineId)).data.userId == request.auth.uid;
+      match /emailtouid/{_} {
         allow write: 
           if request.auth != null 
           && request.auth.uid == request.resource.data.userId;
       }
-      match /videos/{videoId} {
+      match /followingtimelines/{id} {
+        allow delete, update:
+          if request.auth != null
+          && get(/databases/$(database)/documents/followingtimelines/$(id)).data.userId == request.auth.uid;
+        allow write: 
+          if request.auth != null 
+          && request.auth.uid == request.resource.data.userId;
+      }
+      match /timelines/{id} {
+        allow delete, update:
+          if request.auth != null
+          && get(/databases/$(database)/documents/timelines/$(id)).data.userId == request.auth.uid;
+        allow write: 
+          if request.auth != null 
+          && request.auth.uid == request.resource.data.userId;
+      }
+      match /videos/{id} {
         allow write: 
           if request.auth != null 
           && request.auth.uid == request.resource.data.userId;
@@ -20,7 +33,7 @@ service cloud.firestore {
         allow read, update, delete: if request.auth != null && request.auth.uid == userId;
         allow create: if request.auth != null;
       }
-      match /videocomments/{videocommentId} {
+      match /videocomments/{id} {
         allow create: 
           if request.auth != null 
           && request.auth.uid == request.resource.data.userId

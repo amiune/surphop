@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:surphop/menu/menu_page.dart';
-import 'package:surphop/search/search_delegate.dart';
 import 'package:surphop/timelines/following_timelines_page.dart';
 import 'package:surphop/timelines/timeline_tile.dart';
 
@@ -74,6 +73,7 @@ class _MyTimelinesState extends State<MyTimelines> {
   }
 
   void createNewTimeline() async {
+    _timelineNameController.text = "";
     showDialog(
         context: context,
         builder: (context) {
@@ -106,7 +106,45 @@ class _MyTimelinesState extends State<MyTimelines> {
                     setState(() {});
                   }
 
-                  _timelineNameController.text = "";
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void editTimeline(timelineId, timelineName) async {
+    _timelineNameController.text = timelineName;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Edit Timeline'),
+            content: TextField(
+              controller: _timelineNameController,
+              decoration: InputDecoration(hintText: timelineName),
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                color: Colors.blue,
+                textColor: Colors.white,
+                child: const Text('OK'),
+                onPressed: () async {
+                  if (_timelineNameController.text.trim() != "") {
+                    await FirebaseFirestore.instance
+                        .collection("timelines")
+                        .doc(timelineId)
+                        .update({
+                      'timelineName': _timelineNameController.text.trim(),
+                      'tags': _timelineNameController.text
+                          .trim()
+                          .toLowerCase()
+                          .split(" "),
+                    });
+                    setState(() {});
+                  }
 
                   if (!mounted) return;
                   Navigator.pop(context);
@@ -170,6 +208,7 @@ class _MyTimelinesState extends State<MyTimelines> {
                     return TimelineTile(
                       timelineId: timelinesIds[index],
                       timelineName: timelinesNames[index],
+                      editPressed: editTimeline,
                       deletePressed: deleteTimeline,
                     );
                   });
