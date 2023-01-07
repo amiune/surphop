@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>298477354681-mma49ao7dfcvjqpr6ouuu9ouh5mav4ip.apps.googleusercontent.com</string>
+	<string>298477354681-2asm6o7425qcjm5ikvjkj9srt729cvgi.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.298477354681-mma49ao7dfcvjqpr6ouuu9ouh5mav4ip</string>
+	<string>com.googleusercontent.apps.298477354681-2asm6o7425qcjm5ikvjkj9srt729cvgi</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBvF1KVOQ7fVGyKEiCkFRIB7fWrhpiUy9g</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.surphop</string>
+	<string>com.surphop.ios</string>
 	<key>PROJECT_ID</key>
 	<string>surphop</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:298477354681:ios:760d1f073c65f2e2fae568</string>
+	<string>1:298477354681:ios:9ced756406dcc41dfae568</string>
+	<key>DATABASE_URL</key>
+	<string>https://surphop-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

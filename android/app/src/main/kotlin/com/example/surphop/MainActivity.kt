@@ -1,4 +1,4 @@
-package com.example.surphop
+package com.surphop.android
 
 import io.flutter.embedding.android.FlutterActivity
 
