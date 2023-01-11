@@ -72,8 +72,9 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: const Text('Error!'),
-              content: Text(e.toString()),
+              title: const Text("You don't have permissions"),
+              content: const Text(
+                  "Please contact the admin to become a teacher and be able to comment other videos"),
               actions: <Widget>[
                 MaterialButton(
                   color: Colors.blue,
