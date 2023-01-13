@@ -14,6 +14,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _privacyPoliceAccepted = false;
 
   Future registerUser() async {
     try {
@@ -87,9 +88,39 @@ class _RegisterPageState extends State<RegisterPage> {
                         )))),
             const SizedBox(height: 10),
             Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Checkbox(
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _privacyPoliceAccepted = value!;
+                      });
+                    },
+                    value: _privacyPoliceAccepted,
+                  ),
+                  const Text("I accept the terms and privacy policy",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: GestureDetector(
-                    onTap: registerUser,
+                    onTap: (() {
+                      if (_privacyPoliceAccepted == false) {
+                        const snackBar = SnackBar(
+                          content: Text(
+                              'You need to accept the terms and privacy policy'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        registerUser();
+                      }
+                    }),
                     child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
