@@ -22,9 +22,11 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
 
   List<String> timelineVideoIds = [];
   List<String> timelineVideoURLs = [];
+  List<DateTime> timelineVideoUploadedDate = [];
   Future getTimelineVideos() async {
     timelineVideoIds = [];
     timelineVideoURLs = [];
+    timelineVideoUploadedDate = [];
     await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
@@ -34,6 +36,8 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
         .then(((snapshot) => snapshot.docs.forEach(((element) {
               timelineVideoIds.add(element.reference.id);
               timelineVideoURLs.add(element['videoUrl']);
+              timelineVideoUploadedDate
+                  .add(DateTime.parse(element['uploadedDate']));
             }))));
   }
 
@@ -129,6 +133,8 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
                                     child: VideoThumbnailTile(
                                       videoId: timelineVideoIds[index],
                                       videoUrl: timelineVideoURLs[index],
+                                      videoUploadedDate:
+                                          timelineVideoUploadedDate[index],
                                       videoFile: snapshot.data!,
                                       onDeletePressed: ((p0) {}),
                                     ));

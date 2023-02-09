@@ -102,6 +102,7 @@ class _MyTimelinesState extends State<MyTimelines> {
                           .split(" "),
                       'creationDate': currentTime,
                       'updatedDate': currentTime,
+                      "public": false
                     });
                     setState(() {});
                   }

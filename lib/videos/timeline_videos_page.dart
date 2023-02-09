@@ -27,9 +27,11 @@ class _TimelineVideosState extends State<TimelineVideos> {
 
   List<String> timelineVideoIds = [];
   List<String> timelineVideoURLs = [];
+  List<DateTime> timelineVideoUploadedDate = [];
   Future getTimelineVideos() async {
     timelineVideoIds = [];
     timelineVideoURLs = [];
+    timelineVideoUploadedDate = [];
     await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
@@ -39,6 +41,8 @@ class _TimelineVideosState extends State<TimelineVideos> {
         .then(((snapshot) => snapshot.docs.forEach(((element) {
               timelineVideoIds.add(element.reference.id);
               timelineVideoURLs.add(element['videoUrl']);
+              timelineVideoUploadedDate
+                  .add(DateTime.parse(element['uploadedDate']));
             }))));
   }
 
@@ -159,16 +163,22 @@ class _TimelineVideosState extends State<TimelineVideos> {
         color: Colors.blue,
         child: IconTheme(
           data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-          child: Row(
-            children: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
+          child: Row(children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            /*
+            const Spacer(),
+            IconButton(
+              icon: const Icon(Icons.public_off),
+              tooltip: "Public",
+              onPressed: () {},
+            ),
+            */
+          ]),
         ),
       ),
       body: FutureBuilder(
@@ -205,6 +215,8 @@ class _TimelineVideosState extends State<TimelineVideos> {
                                     child: VideoThumbnailTile(
                                       videoId: timelineVideoIds[index],
                                       videoUrl: timelineVideoURLs[index],
+                                      videoUploadedDate:
+                                          timelineVideoUploadedDate[index],
                                       videoFile: snapshot.data!,
                                       onDeletePressed: deleteVideo,
                                     ));

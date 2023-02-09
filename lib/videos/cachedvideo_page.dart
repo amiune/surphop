@@ -3,6 +3,8 @@ import 'package:surphop/videocomments/video_comments_page.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cache_manager/file.dart';
 
+import '../videocomments/get_videocomments_count.dart';
+
 class CachedVideoPage extends StatefulWidget {
   final String videoId;
   final File videoFile;
@@ -73,7 +75,7 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
               );
             }));
           },
-          label: const Text("Comments"),
+          label: GetVideoCommentsCount(videoId: widget.videoId),
           icon: const Icon(Icons.comment),
         ),
         body: GestureDetector(

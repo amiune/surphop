@@ -1,12 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cache_manager/file.dart';
 
 class CachedVideoCommentPage extends StatefulWidget {
-  final String videoId;
+  final String videoCommentId;
   final File videoFile;
+  final int videoState;
   const CachedVideoCommentPage(
-      {super.key, required this.videoId, required this.videoFile});
+      {super.key,
+      required this.videoCommentId,
+      required this.videoState,
+      required this.videoFile});
 
   @override
   State<CachedVideoCommentPage> createState() => _CachedVideoCommentPageState();
@@ -25,6 +30,16 @@ class _CachedVideoCommentPageState extends State<CachedVideoCommentPage> {
       _controller.setLooping(true);
       setState(() {});
     });
+
+    //Change the state to viewed
+    if (widget.videoState == 0) {
+      FirebaseFirestore.instance
+          .collection("videocomments")
+          .doc(widget.videoCommentId)
+          .update({
+        'approved': 1,
+      });
+    }
   }
 
   @override

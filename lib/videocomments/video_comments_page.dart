@@ -9,6 +9,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:surphop/videocomments/cachedvideocomment_page.dart';
 import 'package:surphop/videos/video_thumbnail_tile.dart';
 
+class SortableVideoComment {
+  String videoCommentId;
+  String videoCommentUserId;
+  String videoCommentURL;
+  int videoState;
+  DateTime videoCommentUploadedDate;
+
+  SortableVideoComment(this.videoCommentId, this.videoCommentUserId,
+      this.videoCommentURL, this.videoState, this.videoCommentUploadedDate);
+}
+
 class VideoCommentsPage extends StatefulWidget {
   final String videoId;
   const VideoCommentsPage({super.key, required this.videoId});
@@ -23,23 +34,26 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
   File? _file;
   final ImagePicker _picker = ImagePicker();
 
-  List<String> videoCommentIds = [];
-  List<String> videoCommentUserIds = [];
-  List<String> videoCommentURLs = [];
+  List<SortableVideoComment> videoComments = [];
+
   Future getVideoComments() async {
-    videoCommentIds = [];
-    videoCommentUserIds = [];
-    videoCommentURLs = [];
+    videoComments = [];
     await FirebaseFirestore.instance
         .collection('videocomments')
         .where('videoId', isEqualTo: widget.videoId)
         .where('approved', isGreaterThanOrEqualTo: 0)
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
-              videoCommentIds.add(element.reference.id);
-              videoCommentUserIds.add(element['userId']);
-              videoCommentURLs.add(element['videoCommentUrl']);
+              videoComments.add(SortableVideoComment(
+                  element.reference.id,
+                  element['userId'],
+                  element['videoCommentUrl'],
+                  element['approved'],
+                  DateTime.parse(element['uploadedDate'])));
             }))));
+
+    videoComments.sort((a, b) =>
+        b.videoCommentUploadedDate.compareTo(a.videoCommentUploadedDate));
   }
 
   Future uploadFile() async {
@@ -128,7 +142,7 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
       body: FutureBuilder(
           future: getVideoComments(),
           builder: (context, snapshot) {
-            if (videoCommentURLs.isNotEmpty) {
+            if (videoComments.isNotEmpty) {
               return CustomScrollView(slivers: <Widget>[
                 SliverGrid(
                     gridDelegate:
@@ -141,8 +155,8 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
                         return FutureBuilder(
-                            future: DefaultCacheManager()
-                                .getSingleFile(videoCommentURLs[index]),
+                            future: DefaultCacheManager().getSingleFile(
+                                videoComments[index].videoCommentURL),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 return GestureDetector(
@@ -150,14 +164,21 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
                                         return CachedVideoCommentPage(
-                                          videoId: videoCommentIds[index],
+                                          videoCommentId: videoComments[index]
+                                              .videoCommentId,
                                           videoFile: snapshot.data!,
+                                          videoState:
+                                              videoComments[index].videoState,
                                         );
                                       }));
                                     },
                                     child: VideoThumbnailTile(
-                                      videoId: videoCommentIds[index],
-                                      videoUrl: videoCommentURLs[index],
+                                      videoId:
+                                          videoComments[index].videoCommentId,
+                                      videoUrl:
+                                          videoComments[index].videoCommentURL,
+                                      videoUploadedDate: videoComments[index]
+                                          .videoCommentUploadedDate,
                                       videoFile: snapshot.data!,
                                       onDeletePressed: (_) {},
                                     ));
@@ -167,7 +188,7 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
                               }
                             });
                       },
-                      childCount: videoCommentURLs.length,
+                      childCount: videoComments.length,
                     ))
               ]);
             } else {
