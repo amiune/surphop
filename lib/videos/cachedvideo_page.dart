@@ -9,11 +9,13 @@ class CachedVideoPage extends StatefulWidget {
   final String videoId;
   final File videoFile;
   final Function(String) onDeletePressed;
+  final String videoCreatorId;
   const CachedVideoPage(
       {super.key,
       required this.videoId,
       required this.videoFile,
-      required this.onDeletePressed});
+      required this.onDeletePressed,
+      required this.videoCreatorId});
 
   @override
   State<CachedVideoPage> createState() => _CachedVideoPageState();
@@ -72,6 +74,7 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return VideoCommentsPage(
                 videoId: widget.videoId,
+                videoCreatorId: widget.videoCreatorId,
               );
             }));
           },

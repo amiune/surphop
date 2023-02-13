@@ -23,10 +23,12 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
   List<String> timelineVideoIds = [];
   List<String> timelineVideoURLs = [];
   List<DateTime> timelineVideoUploadedDate = [];
+  List<String> timelineVideoCreatorId = [];
   Future getTimelineVideos() async {
     timelineVideoIds = [];
     timelineVideoURLs = [];
     timelineVideoUploadedDate = [];
+    timelineVideoCreatorId = [];
     await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
@@ -38,6 +40,7 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
               timelineVideoURLs.add(element['videoUrl']);
               timelineVideoUploadedDate
                   .add(DateTime.parse(element['uploadedDate']));
+              timelineVideoCreatorId = element['userId'];
             }))));
   }
 
@@ -127,6 +130,8 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
                                         return PublicCachedVideoPage(
                                           videoId: timelineVideoIds[index],
                                           videoFile: snapshot.data!,
+                                          videoCreatorId:
+                                              timelineVideoCreatorId[index],
                                         );
                                       }));
                                     },

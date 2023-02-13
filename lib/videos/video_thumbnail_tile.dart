@@ -56,9 +56,9 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
     if (days <= 30) {
       daysAgo = "$days days ago";
     } else if (days <= 30 * 12) {
-      daysAgo = "${(days / 30)} months ago";
+      daysAgo = "${days ~/ 30} months ago";
     } else {
-      daysAgo = "${(days / (30 * 12))} years ago";
+      daysAgo = "${(days ~/ (30 * 12))} years ago";
     }
 
     if (_controller.value.isInitialized) {

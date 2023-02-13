@@ -28,10 +28,12 @@ class _TimelineVideosState extends State<TimelineVideos> {
   List<String> timelineVideoIds = [];
   List<String> timelineVideoURLs = [];
   List<DateTime> timelineVideoUploadedDate = [];
+  List<String> timelineVideoCreatorId = [];
   Future getTimelineVideos() async {
     timelineVideoIds = [];
     timelineVideoURLs = [];
     timelineVideoUploadedDate = [];
+    timelineVideoCreatorId = [];
     await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
@@ -43,6 +45,7 @@ class _TimelineVideosState extends State<TimelineVideos> {
               timelineVideoURLs.add(element['videoUrl']);
               timelineVideoUploadedDate
                   .add(DateTime.parse(element['uploadedDate']));
+              timelineVideoCreatorId.add(element['userId']);
             }))));
   }
 
@@ -62,15 +65,49 @@ class _TimelineVideosState extends State<TimelineVideos> {
           "users/${user.uid}/${widget.timelineId}/$videoId$fileExtension");
       await ref.putFile(_file!);
       String videoUrl = await ref.getDownloadURL();
-      FirebaseFirestore.instance.collection("videos").add({
+      var uploadedVideoReference =
+          await FirebaseFirestore.instance.collection("videos").add({
         'userId': user.uid,
         'timelineId': widget.timelineId,
         'videoUrl': videoUrl,
         'uploadedDate': DateTime.now().toIso8601String(),
         'deleted': false
-      }).then((value) {
-        setState(() {});
       });
+
+      //---------------- ADD NOTIFICATIONS START ----------------
+      //REPLACE THIS WITH FIREBASE FUNCTIONS
+      //GET ALL FOLLOWING widget.timelineId AND ADD NOTIFICATION FOR EACH
+      List<String> followersList = [];
+      await FirebaseFirestore.instance
+          .collection('followingtimelines')
+          .where('timelineId', isEqualTo: widget.timelineId)
+          .get()
+          .then(((snapshot) => snapshot.docs.forEach(((element) {
+                followersList.add(element["userId"]);
+              }))));
+
+      String? userName = user.displayName;
+      userName ??= user.email;
+      final batch = FirebaseFirestore.instance.batch();
+      for (int i = 0; i < followersList.length; i++) {
+        var notificationsRef =
+            FirebaseFirestore.instance.collection("notifications").doc();
+        batch.set(notificationsRef, {
+          'forUserId': followersList[i],
+          'fromUserId': user.uid,
+          'timelineId': widget.timelineId,
+          'videoId': uploadedVideoReference.id,
+          'notificationDate': DateTime.now().toIso8601String(),
+          'viewed': 0,
+          'text':
+              "$userName uploaded a new video in timeline ${widget.timelineName}"
+        });
+      }
+      batch.commit();
+      //---------------- ADD NOTIFICATIONS END ----------------
+
+      setState(() {});
+      //UPDATE TIMELINE UPDATED DATE
       FirebaseFirestore.instance
           .collection("timelines")
           .doc(widget.timelineId)
@@ -209,6 +246,8 @@ class _TimelineVideosState extends State<TimelineVideos> {
                                           videoId: timelineVideoIds[index],
                                           videoFile: snapshot.data!,
                                           onDeletePressed: deleteVideo,
+                                          videoCreatorId:
+                                              timelineVideoCreatorId[index],
                                         );
                                       }));
                                     },

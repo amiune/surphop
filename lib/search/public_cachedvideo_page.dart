@@ -6,11 +6,12 @@ import 'package:flutter_cache_manager/file.dart';
 class PublicCachedVideoPage extends StatefulWidget {
   final String videoId;
   final File videoFile;
-  const PublicCachedVideoPage({
-    super.key,
-    required this.videoId,
-    required this.videoFile,
-  });
+  final String videoCreatorId;
+  const PublicCachedVideoPage(
+      {super.key,
+      required this.videoId,
+      required this.videoFile,
+      required this.videoCreatorId});
 
   @override
   State<PublicCachedVideoPage> createState() => _PublicCachedVideoPageState();
@@ -61,6 +62,7 @@ class _PublicCachedVideoPageState extends State<PublicCachedVideoPage> {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return VideoCommentsPage(
                 videoId: widget.videoId,
+                videoCreatorId: widget.videoCreatorId,
               );
             }));
           },

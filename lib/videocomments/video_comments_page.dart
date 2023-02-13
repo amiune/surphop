@@ -22,7 +22,9 @@ class SortableVideoComment {
 
 class VideoCommentsPage extends StatefulWidget {
   final String videoId;
-  const VideoCommentsPage({super.key, required this.videoId});
+  final String videoCreatorId;
+  const VideoCommentsPage(
+      {super.key, required this.videoId, required this.videoCreatorId});
 
   @override
   State<VideoCommentsPage> createState() => _VideoCommentsPageState();
@@ -72,7 +74,8 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
           "videocomments/${widget.videoId}/${user.uid}/$videoCommentId$fileExtension");
       await ref.putFile(_file!);
       String videoUrl = await ref.getDownloadURL();
-      await FirebaseFirestore.instance.collection("videocomments").add({
+      var uploadedVideoCommentReference =
+          await FirebaseFirestore.instance.collection("videocomments").add({
         'videoId': widget.videoId,
         'userId': user.uid,
         'videoCommentUrl': videoUrl,
@@ -81,6 +84,22 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
         'reportedText': ""
       });
       setState(() {});
+
+      //---------------- ADD NOTIFICATION START ----------------
+      //REPLACE THIS WITH FIREBASE FUNCTIONS
+      String? commenterUserName = user.displayName;
+      commenterUserName ??= user.email;
+      FirebaseFirestore.instance.collection("notifications").add({
+        'forUserId': widget.videoCreatorId,
+        'fromUserId': user.uid,
+        'videoId': widget.videoId,
+        'videoCommentId': uploadedVideoCommentReference.id,
+        'notificationDate': DateTime.now().toIso8601String(),
+        'viewed': 0,
+        'text': "You have a new video comment from $commenterUserName"
+      });
+      //---------------- ADD NOTIFICATION END ----------------
+
     } catch (e) {
       showDialog(
           context: context,
