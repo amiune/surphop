@@ -72,6 +72,7 @@ class _CachedVideoPageState extends State<CachedVideoPage> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
+              _controller.pause();
               return VideoCommentsPage(
                 videoId: widget.videoId,
                 videoCreatorId: widget.videoCreatorId,
