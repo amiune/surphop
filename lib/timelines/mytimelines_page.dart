@@ -203,17 +203,24 @@ class _MyTimelinesState extends State<MyTimelines> {
         body: FutureBuilder(
             future: getMyTimelines(),
             builder: (context, snapshot) {
-              return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 150),
-                  itemCount: timelinesIds.length,
-                  itemBuilder: (context, index) {
-                    return TimelineTile(
-                      timelineId: timelinesIds[index],
-                      timelineName: timelinesNames[index],
-                      editPressed: editTimeline,
-                      deletePressed: deleteTimeline,
-                    );
-                  });
+              if (timelinesIds.isNotEmpty) {
+                return ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 150),
+                    itemCount: timelinesIds.length,
+                    itemBuilder: (context, index) {
+                      return TimelineTile(
+                        timelineId: timelinesIds[index],
+                        timelineName: timelinesNames[index],
+                        editPressed: editTimeline,
+                        deletePressed: deleteTimeline,
+                      );
+                    });
+              } else {
+                return const Center(
+                  child:
+                      Text("Click Add timeline to create your first timeline"),
+                );
+              }
             }));
   }
 }

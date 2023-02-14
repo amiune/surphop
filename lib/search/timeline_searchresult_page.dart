@@ -40,7 +40,7 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
       timelineVideoIds.add(element.reference.id);
       timelineVideoURLs.add(element['videoUrl']);
       timelineVideoUploadedDate.add(DateTime.parse(element['uploadedDate']));
-      timelineVideoCreatorId = element['userId'];
+      timelineVideoCreatorId.add(element['userId']);
     }
   }
 

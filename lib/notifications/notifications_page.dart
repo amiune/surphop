@@ -74,20 +74,26 @@ class _NotificationsPageState extends State<NotificationsPage> {
         body: FutureBuilder(
             future: getMyTimelines(),
             builder: (context, snapshot) {
-              return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 150),
-                  itemCount: notificationIds.length,
-                  itemBuilder: (context, index) {
-                    return NotificationTile(
-                      notificationId: notificationIds[index],
-                      notificationText: notificationTexts[index],
-                      notificationVideoId: notificationVideoIds[index],
-                      notificationVideoCommentId:
-                          notificationVideoCommentIds[index],
-                      notificationViewed: notificationViewed[index],
-                      deletePressed: deleteNotification,
-                    );
-                  });
+              if (notificationIds.isNotEmpty) {
+                return ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 150),
+                    itemCount: notificationIds.length,
+                    itemBuilder: (context, index) {
+                      return NotificationTile(
+                        notificationId: notificationIds[index],
+                        notificationText: notificationTexts[index],
+                        notificationVideoId: notificationVideoIds[index],
+                        notificationVideoCommentId:
+                            notificationVideoCommentIds[index],
+                        notificationViewed: notificationViewed[index],
+                        deletePressed: deleteNotification,
+                      );
+                    });
+              } else {
+                return const Center(
+                  child: Text("You have no notifications"),
+                );
+              }
             }));
   }
 }
