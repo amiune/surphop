@@ -70,9 +70,11 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
         throw Exception("File is to big. Needs to be less than 100MB");
       }
 
-      final videoCommentId = DateTime.now().millisecondsSinceEpoch;
-      final ref = FirebaseStorage.instance.ref().child(
-          "videocomments/${widget.videoId}/${user.uid}/$videoCommentId$fileExtension");
+      var today = DateTime.now();
+      final videoCommentId = today.millisecondsSinceEpoch;
+      var path =
+          "videocomments/${widget.videoId}/${user.uid}/$videoCommentId$fileExtension";
+      final ref = FirebaseStorage.instance.ref().child(path);
       await ref.putFile(_file!);
       String videoUrl = await ref.getDownloadURL();
       var uploadedVideoCommentReference =
@@ -80,9 +82,10 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
         'videoId': widget.videoId,
         'userId': user.uid,
         'videoCommentUrl': videoUrl,
-        'uploadedDate': DateTime.now().toIso8601String(),
+        'uploadedDate': today.toIso8601String(),
         'approved': 0,
-        'reportedText': ""
+        'reportedText': "",
+        'path': path
       });
       setState(() {});
 

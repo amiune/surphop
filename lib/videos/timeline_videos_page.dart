@@ -60,9 +60,11 @@ class _TimelineVideosState extends State<TimelineVideos> {
         throw Exception("File is to big. Needs to be less than 100MB");
       }
 
-      final videoId = DateTime.now().millisecondsSinceEpoch;
-      final ref = FirebaseStorage.instance.ref().child(
-          "users/${user.uid}/${widget.timelineId}/$videoId$fileExtension");
+      var today = DateTime.now();
+      final videoId = today.millisecondsSinceEpoch;
+      var path =
+          "users/${user.uid}/${widget.timelineId}/$videoId$fileExtension";
+      final ref = FirebaseStorage.instance.ref().child(path);
       await ref.putFile(_file!);
       String videoUrl = await ref.getDownloadURL();
       var uploadedVideoReference =
@@ -70,8 +72,9 @@ class _TimelineVideosState extends State<TimelineVideos> {
         'userId': user.uid,
         'timelineId': widget.timelineId,
         'videoUrl': videoUrl,
-        'uploadedDate': DateTime.now().toIso8601String(),
-        'deleted': false
+        'uploadedDate': today.toIso8601String(),
+        'deleted': false,
+        'path': path
       });
 
       //---------------- ADD NOTIFICATIONS START ----------------
