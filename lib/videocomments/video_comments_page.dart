@@ -40,19 +40,20 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
 
   Future getVideoComments() async {
     videoComments = [];
-    await FirebaseFirestore.instance
+    var videoCommentsRef = await FirebaseFirestore.instance
         .collection('videocomments')
         .where('videoId', isEqualTo: widget.videoId)
         .where('approved', isGreaterThanOrEqualTo: 0)
-        .get()
-        .then(((snapshot) => snapshot.docs.forEach(((element) {
-              videoComments.add(SortableVideoComment(
-                  element.reference.id,
-                  element['userId'],
-                  element['videoCommentUrl'],
-                  element['approved'],
-                  DateTime.parse(element['uploadedDate'])));
-            }))));
+        .get();
+
+    for (var element in videoCommentsRef.docs) {
+      videoComments.add(SortableVideoComment(
+          element.reference.id,
+          element['userId'],
+          element['videoCommentUrl'],
+          element['approved'],
+          DateTime.parse(element['uploadedDate'])));
+    }
 
     videoComments.sort((a, b) =>
         b.videoCommentUploadedDate.compareTo(a.videoCommentUploadedDate));
@@ -97,7 +98,7 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
         'videoId': widget.videoId,
         'videoCommentId': uploadedVideoCommentReference.id,
         'notificationDate': DateTime.now().toIso8601String(),
-        'viewed': 0,
+        'viewed': false,
         'text': "You have a new video comment from $commenterUserName"
       });
       //---------------- ADD NOTIFICATION END ----------------

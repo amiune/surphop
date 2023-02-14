@@ -29,19 +29,19 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
     timelineVideoURLs = [];
     timelineVideoUploadedDate = [];
     timelineVideoCreatorId = [];
-    await FirebaseFirestore.instance
+    var videosRef = await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
         .where('deleted', isEqualTo: false)
         .orderBy('uploadedDate', descending: true)
-        .get()
-        .then(((snapshot) => snapshot.docs.forEach(((element) {
-              timelineVideoIds.add(element.reference.id);
-              timelineVideoURLs.add(element['videoUrl']);
-              timelineVideoUploadedDate
-                  .add(DateTime.parse(element['uploadedDate']));
-              timelineVideoCreatorId = element['userId'];
-            }))));
+        .get();
+
+    for (var element in videosRef.docs) {
+      timelineVideoIds.add(element.reference.id);
+      timelineVideoURLs.add(element['videoUrl']);
+      timelineVideoUploadedDate.add(DateTime.parse(element['uploadedDate']));
+      timelineVideoCreatorId = element['userId'];
+    }
   }
 
   Future<void> followTimeline() async {

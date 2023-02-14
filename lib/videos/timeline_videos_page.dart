@@ -34,19 +34,19 @@ class _TimelineVideosState extends State<TimelineVideos> {
     timelineVideoURLs = [];
     timelineVideoUploadedDate = [];
     timelineVideoCreatorId = [];
-    await FirebaseFirestore.instance
+    var videosRef = await FirebaseFirestore.instance
         .collection('videos')
         .where('timelineId', isEqualTo: widget.timelineId)
         .where('deleted', isEqualTo: false)
         .orderBy('uploadedDate', descending: true)
-        .get()
-        .then(((snapshot) => snapshot.docs.forEach(((element) {
-              timelineVideoIds.add(element.reference.id);
-              timelineVideoURLs.add(element['videoUrl']);
-              timelineVideoUploadedDate
-                  .add(DateTime.parse(element['uploadedDate']));
-              timelineVideoCreatorId.add(element['userId']);
-            }))));
+        .get();
+
+    for (var element in videosRef.docs) {
+      timelineVideoIds.add(element.reference.id);
+      timelineVideoURLs.add(element['videoUrl']);
+      timelineVideoUploadedDate.add(DateTime.parse(element['uploadedDate']));
+      timelineVideoCreatorId.add(element['userId']);
+    }
   }
 
   Future uploadFile() async {
@@ -100,7 +100,7 @@ class _TimelineVideosState extends State<TimelineVideos> {
           'timelineId': widget.timelineId,
           'videoId': uploadedVideoReference.id,
           'notificationDate': DateTime.now().toIso8601String(),
-          'viewed': 0,
+          'viewed': false,
           'text':
               "$userName uploaded a new video in timeline ${widget.timelineName}"
         });

@@ -23,16 +23,17 @@ class _FollowingTimelinesState extends State<FollowingTimelines> {
     followingTimelinesIds = [];
     followingTimelinesNames = [];
     timelinesIds = [];
-    await FirebaseFirestore.instance
+    var followingTimelinesRef = await FirebaseFirestore.instance
         .collection('followingtimelines')
         .where('userId', isEqualTo: user.uid.toString())
         .orderBy('timelineName', descending: false)
-        .get()
-        .then(((snapshot) => snapshot.docs.forEach(((element) {
-              followingTimelinesIds.add(element.reference.id);
-              followingTimelinesNames.add(element["timelineName"]);
-              timelinesIds.add(element["timelineId"]);
-            }))));
+        .get();
+
+    for (var element in followingTimelinesRef.docs) {
+      followingTimelinesIds.add(element.reference.id);
+      followingTimelinesNames.add(element["timelineName"]);
+      timelinesIds.add(element["timelineId"]);
+    }
   }
 
   void deleteFollowingTimeline(timelineId, timelineName) {

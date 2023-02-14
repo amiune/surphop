@@ -18,15 +18,16 @@ class _UserTimelinesState extends State<UserTimelines> {
   Future getTimelines() async {
     timelinesIds = [];
     timelinesNames = [];
-    await FirebaseFirestore.instance
+    var timelinesRef = await FirebaseFirestore.instance
         .collection('timelines')
         .where('userId', isEqualTo: widget.userId)
         .orderBy('updatedDate', descending: true)
-        .get()
-        .then(((snapshot) => snapshot.docs.forEach(((element) {
-              timelinesIds.add(element.reference.id);
-              timelinesNames.add(element["timelineName"]);
-            }))));
+        .get();
+
+    for (var element in timelinesRef.docs) {
+      timelinesIds.add(element.reference.id);
+      timelinesNames.add(element["timelineName"]);
+    }
   }
 
   @override

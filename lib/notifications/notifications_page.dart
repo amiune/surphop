@@ -15,18 +15,29 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   List<String> notificationIds = [];
   List<String> notificationTexts = [];
+  List<String> notificationVideoIds = [];
+  List<String?> notificationVideoCommentIds = [];
+  List<bool> notificationViewed = [];
   Future getMyTimelines() async {
     notificationIds = [];
     notificationTexts = [];
-    await FirebaseFirestore.instance
+    var notificationsRef = await FirebaseFirestore.instance
         .collection('notifications')
         .where('forUserId', isEqualTo: user.uid.toString())
         .orderBy('notificationDate', descending: true)
-        .get()
-        .then(((snapshot) => snapshot.docs.forEach(((element) {
-              notificationIds.add(element.reference.id);
-              notificationTexts.add(element["text"]);
-            }))));
+        .get();
+
+    for (var element in notificationsRef.docs) {
+      notificationIds.add(element.reference.id);
+      notificationTexts.add(element["text"]);
+      notificationVideoIds.add(element["videoId"]);
+      if (element.data().toString().contains('videoCommentId')) {
+        notificationVideoCommentIds.add(element["videoCommentId"]);
+      } else {
+        notificationVideoCommentIds.add(null);
+      }
+      notificationViewed.add(element["viewed"]);
+    }
   }
 
   Future<void> deleteNotification(timelineId) async {
@@ -70,6 +81,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     return NotificationTile(
                       notificationId: notificationIds[index],
                       notificationText: notificationTexts[index],
+                      notificationVideoId: notificationVideoIds[index],
+                      notificationVideoCommentId:
+                          notificationVideoCommentIds[index],
+                      notificationViewed: notificationViewed[index],
                       deletePressed: deleteNotification,
                     );
                   });
