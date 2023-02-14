@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:surphop/menu/menu_page.dart';
+import 'package:surphop/notifications/notifications_page.dart';
 import 'package:surphop/timelines/following_timelines_page.dart';
 import 'package:surphop/timelines/timeline_tile.dart';
 
@@ -187,6 +188,16 @@ class _MyTimelinesState extends State<MyTimelines> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (newContext) {
                       return const FollowingTimelines();
+                    }));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Notifications',
+                  icon: const Icon(Icons.notifications_rounded),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (newContext) {
+                      return const NotificationsPage();
                     }));
                   },
                 ),
