@@ -88,7 +88,9 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
       //---------------- ADD NOTIFICATION START ----------------
       //REPLACE THIS WITH FIREBASE FUNCTIONS
       String? commenterUserName = user.displayName;
-      commenterUserName ??= user.email;
+      if (commenterUserName == null || commenterUserName == "") {
+        commenterUserName = user.email;
+      }
       FirebaseFirestore.instance.collection("notifications").add({
         'forUserId': widget.videoCreatorId,
         'fromUserId': user.uid,

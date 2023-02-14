@@ -87,7 +87,9 @@ class _TimelineVideosState extends State<TimelineVideos> {
               }))));
 
       String? userName = user.displayName;
-      userName ??= user.email;
+      if (userName == null || userName == "") {
+        userName = user.email;
+      }
       final batch = FirebaseFirestore.instance.batch();
       for (int i = 0; i < followersList.length; i++) {
         var notificationsRef =

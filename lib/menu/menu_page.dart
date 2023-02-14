@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:surphop/notifications/notifications_page.dart';
 import 'package:surphop/search/search_delegate.dart';
 import 'package:surphop/timelines/following_timelines_page.dart';
 
@@ -137,6 +138,13 @@ class _MenuPageState extends State<MenuPage> {
                 });
               }),
         ListTile(
+            title: const Text('Notifications'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (newContext) {
+                return const NotificationsPage();
+              }));
+            }),
+        ListTile(
             title: const Text("Following"),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (newContext) {
@@ -157,7 +165,6 @@ class _MenuPageState extends State<MenuPage> {
               FirebaseAuth.instance.signOut();
               Navigator.pop(context);
             }),
-        const ListTile(),
         const ListTile(),
         const ListTile(),
         const ListTile(),
