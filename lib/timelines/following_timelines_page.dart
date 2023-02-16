@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:surphop/search/search_delegate.dart';
 import 'package:surphop/timelines/folowingtimeline_tile.dart';
 
-class FollowingTimelines extends StatefulWidget {
-  const FollowingTimelines({super.key});
+class FollowingTimelinesPage extends StatefulWidget {
+  const FollowingTimelinesPage({super.key});
 
   @override
-  State<FollowingTimelines> createState() => _FollowingTimelinesState();
+  State<FollowingTimelinesPage> createState() => _FollowingTimelinesPageState();
 }
 
-class _FollowingTimelinesState extends State<FollowingTimelines> {
+class _FollowingTimelinesPageState extends State<FollowingTimelinesPage> {
   final user = FirebaseAuth.instance.currentUser!;
   String? timelineNameText;
   final _timelineNameController = TextEditingController();

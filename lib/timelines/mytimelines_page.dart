@@ -187,7 +187,7 @@ class _MyTimelinesState extends State<MyTimelines> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (newContext) {
-                      return const FollowingTimelines();
+                      return const FollowingTimelinesPage();
                     }));
                   },
                 ),
