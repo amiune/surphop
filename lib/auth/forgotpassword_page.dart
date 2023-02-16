@@ -45,16 +45,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              "Enter your Email and will send you a password reset link",
+              "Enter your eMail and will send\nyou a password reset link",
+              style: TextStyle(fontSize: 24),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
                 child: Container(
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
+                        border: Border.all(color: (Colors.grey[500])!),
                         borderRadius: BorderRadius.circular(12)),
                     child: Padding(
                         padding: const EdgeInsets.only(left: 20.0),

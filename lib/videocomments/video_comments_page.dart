@@ -91,19 +91,22 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
 
       //---------------- ADD NOTIFICATION START ----------------
       //REPLACE THIS WITH FIREBASE FUNCTIONS
-      String? commenterUserName = user.displayName;
-      if (commenterUserName == null || commenterUserName == "") {
-        commenterUserName = user.email;
+      //GET ALL USERS THAT COMMENTED THE VIDEO AND SEND NOTIFICATIONS
+      if (user.uid != widget.videoCreatorId) {
+        String? commenterUserName = user.displayName;
+        if (commenterUserName == null || commenterUserName == "") {
+          commenterUserName = user.email;
+        }
+        FirebaseFirestore.instance.collection("notifications").add({
+          'forUserId': widget.videoCreatorId,
+          'fromUserId': user.uid,
+          'videoId': widget.videoId,
+          'videoCommentId': uploadedVideoCommentReference.id,
+          'notificationDate': DateTime.now().toIso8601String(),
+          'viewed': false,
+          'text': "You have a new video comment from $commenterUserName"
+        });
       }
-      FirebaseFirestore.instance.collection("notifications").add({
-        'forUserId': widget.videoCreatorId,
-        'fromUserId': user.uid,
-        'videoId': widget.videoId,
-        'videoCommentId': uploadedVideoCommentReference.id,
-        'notificationDate': DateTime.now().toIso8601String(),
-        'viewed': false,
-        'text': "You have a new video comment from $commenterUserName"
-      });
       //---------------- ADD NOTIFICATION END ----------------
 
     } catch (e) {

@@ -96,6 +96,12 @@ class _MenuPageState extends State<MenuPage> {
                   query: "");
             }),
         ListTile(
+            title: const Text('Sign Out'),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+            }),
+        ListTile(
             title: const Text('More options...'),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (newContext) {

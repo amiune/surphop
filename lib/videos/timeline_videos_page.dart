@@ -95,18 +95,20 @@ class _TimelineVideosState extends State<TimelineVideos> {
       }
       final batch = FirebaseFirestore.instance.batch();
       for (int i = 0; i < followersList.length; i++) {
-        var notificationsRef =
-            FirebaseFirestore.instance.collection("notifications").doc();
-        batch.set(notificationsRef, {
-          'forUserId': followersList[i],
-          'fromUserId': user.uid,
-          'timelineId': widget.timelineId,
-          'videoId': uploadedVideoReference.id,
-          'notificationDate': DateTime.now().toIso8601String(),
-          'viewed': false,
-          'text':
-              "$userName uploaded a new video in timeline ${widget.timelineName}"
-        });
+        if (user.uid != followersList[i]) {
+          var notificationsRef =
+              FirebaseFirestore.instance.collection("notifications").doc();
+          batch.set(notificationsRef, {
+            'forUserId': followersList[i],
+            'fromUserId': user.uid,
+            'timelineId': widget.timelineId,
+            'videoId': uploadedVideoReference.id,
+            'notificationDate': DateTime.now().toIso8601String(),
+            'viewed': false,
+            'text':
+                "$userName uploaded a new video in timeline ${widget.timelineName}"
+          });
+        }
       }
       batch.commit();
       //---------------- ADD NOTIFICATIONS END ----------------

@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'forgotpassword_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -51,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
         Text("surphop", style: GoogleFonts.bebasNeue(fontSize: 52)),
         const SizedBox(height: 10),
         const Text(
-          "Save your progress \n and help other people",
+          "Track your progress \n and get tips to improve",
           style: TextStyle(fontSize: 24),
           textAlign: TextAlign.center,
         ),

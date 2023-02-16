@@ -106,12 +106,6 @@ class _MoreOptionsPageState extends State<MoreOptionsPage> {
                     ? Text(user.displayName!)
                     : Text(user.email!))),
         ListTile(
-            title: const Text('Sign Out'),
-            onTap: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.pop(context);
-            }),
-        ListTile(
             title: const Text(
               'Delete Account',
             ),
