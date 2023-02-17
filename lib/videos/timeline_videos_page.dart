@@ -81,25 +81,25 @@ class _TimelineVideosState extends State<TimelineVideos> {
       //REPLACE THIS WITH FIREBASE FUNCTIONS
       //GET ALL FOLLOWING widget.timelineId AND ADD NOTIFICATION FOR EACH
       List<String> followersList = [];
-      await FirebaseFirestore.instance
+      var followersRef = await FirebaseFirestore.instance
           .collection('followingtimelines')
           .where('timelineId', isEqualTo: widget.timelineId)
-          .get()
-          .then(((snapshot) => snapshot.docs.forEach(((element) {
-                followersList.add(element["userId"]);
-              }))));
+          .get();
+      for (var element in followersRef.docs) {
+        followersList.add(element["userId"]);
+      }
 
       String? userName = user.displayName;
       if (userName == null || userName == "") {
         userName = user.email;
       }
       final batch = FirebaseFirestore.instance.batch();
-      for (int i = 0; i < followersList.length; i++) {
-        if (user.uid != followersList[i]) {
+      for (var follower in followersList) {
+        if (user.uid != follower) {
           var notificationsRef =
               FirebaseFirestore.instance.collection("notifications").doc();
           batch.set(notificationsRef, {
-            'forUserId': followersList[i],
+            'forUserId': follower,
             'fromUserId': user.uid,
             'timelineId': widget.timelineId,
             'videoId': uploadedVideoReference.id,

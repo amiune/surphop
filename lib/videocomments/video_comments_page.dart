@@ -23,8 +23,11 @@ class SortableVideoComment {
 class VideoCommentsPage extends StatefulWidget {
   final String videoId;
   final String videoCreatorId;
-  const VideoCommentsPage(
-      {super.key, required this.videoId, required this.videoCreatorId});
+  const VideoCommentsPage({
+    super.key,
+    required this.videoId,
+    required this.videoCreatorId,
+  });
 
   @override
   State<VideoCommentsPage> createState() => _VideoCommentsPageState();
@@ -91,21 +94,41 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
 
       //---------------- ADD NOTIFICATION START ----------------
       //REPLACE THIS WITH FIREBASE FUNCTIONS
-      //GET ALL USERS THAT COMMENTED THE VIDEO AND SEND NOTIFICATIONS
+      //Notify the video creator
+      List<String> commentersList = [];
       if (user.uid != widget.videoCreatorId) {
-        String? commenterUserName = user.displayName;
-        if (commenterUserName == null || commenterUserName == "") {
-          commenterUserName = user.email;
+        commentersList.add(widget.videoCreatorId);
+      }
+      //Notify all users that commented the video
+      var commentsRef = await FirebaseFirestore.instance
+          .collection('videocomments')
+          .where('videoId', isEqualTo: widget.videoId)
+          .get();
+      for (var element in commentsRef.docs) {
+        if (user.uid != element["userId"]) {
+          commentersList.add(element["userId"]);
         }
-        FirebaseFirestore.instance.collection("notifications").add({
-          'forUserId': widget.videoCreatorId,
+      }
+
+      String? commenterUserName = user.displayName;
+      if (commenterUserName == null || commenterUserName == "") {
+        commenterUserName = user.email;
+      }
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (var commenter in commentersList) {
+        var notificationsRef =
+            FirebaseFirestore.instance.collection("notifications").doc();
+        batch.set(notificationsRef, {
+          'forUserId': commenter,
           'fromUserId': user.uid,
           'videoId': widget.videoId,
           'videoCommentId': uploadedVideoCommentReference.id,
           'notificationDate': DateTime.now().toIso8601String(),
           'viewed': false,
-          'text': "You have a new video comment from $commenterUserName"
+          'text': "There is a new video comment from $commenterUserName"
         });
+        batch.commit();
       }
       //---------------- ADD NOTIFICATION END ----------------
 

@@ -40,7 +40,7 @@ class _MyTimelinesState extends State<MyTimelines> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Delete Learning Timeline?'),
+            title: const Text('Delete Timeline?'),
             content: Text(timelineName),
             actions: <Widget>[
               MaterialButton(
@@ -80,7 +80,7 @@ class _MyTimelinesState extends State<MyTimelines> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Create Learning Timeline'),
+            title: const Text('Create Timeline'),
             content: TextField(
               controller: _timelineNameController,
               decoration: const InputDecoration(hintText: "Timeline Name"),
@@ -214,22 +214,28 @@ class _MyTimelinesState extends State<MyTimelines> {
         body: FutureBuilder(
             future: getMyTimelines(),
             builder: (context, snapshot) {
-              if (timelinesIds.isNotEmpty) {
-                return ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 150),
-                    itemCount: timelinesIds.length,
-                    itemBuilder: (context, index) {
-                      return TimelineTile(
-                        timelineId: timelinesIds[index],
-                        timelineName: timelinesNames[index],
-                        editPressed: editTimeline,
-                        deletePressed: deleteTimeline,
-                      );
-                    });
+              if (snapshot.hasData) {
+                if (timelinesIds.isNotEmpty) {
+                  return ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 150),
+                      itemCount: timelinesIds.length,
+                      itemBuilder: (context, index) {
+                        return TimelineTile(
+                          timelineId: timelinesIds[index],
+                          timelineName: timelinesNames[index],
+                          editPressed: editTimeline,
+                          deletePressed: deleteTimeline,
+                        );
+                      });
+                } else {
+                  return const Center(
+                    child: Text(
+                        "Click Add timeline to create your first timeline"),
+                  );
+                }
               } else {
                 return const Center(
-                  child:
-                      Text("Click Add timeline to create your first timeline"),
+                  child: Text("Loading timelines..."),
                 );
               }
             }));
