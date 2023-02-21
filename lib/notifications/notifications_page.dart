@@ -74,7 +74,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         body: FutureBuilder(
             future: getMyTimelines(),
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.done) {
                 if (notificationIds.isNotEmpty) {
                   return ListView.builder(
                       padding: const EdgeInsets.only(bottom: 150),
@@ -92,7 +92,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       });
                 } else {
                   return const Center(
-                    child: Text("You have no notifications"),
+                    child: Text("You don't have notifications"),
                   );
                 }
               } else {

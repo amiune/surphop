@@ -214,7 +214,7 @@ class _MyTimelinesState extends State<MyTimelines> {
         body: FutureBuilder(
             future: getMyTimelines(),
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.done) {
                 if (timelinesIds.isNotEmpty) {
                   return ListView.builder(
                       padding: const EdgeInsets.only(bottom: 150),

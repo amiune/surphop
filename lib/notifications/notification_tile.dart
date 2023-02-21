@@ -23,6 +23,10 @@ class NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var formatedNotificationText = notificationText
+        .replaceFirst("uploaded", "\nuploaded")
+        .replaceFirst("timeline ", "timeline\n")
+        .replaceFirst("from ", "from\n");
     return GestureDetector(
       onTap: () async {
         if (notificationVideoCommentId != null) {
@@ -87,7 +91,7 @@ class NotificationTile extends StatelessWidget {
             decoration: BoxDecoration(
                 color: notificationViewed ? Colors.grey[200] : Colors.blue[200],
                 borderRadius: BorderRadius.circular(12)),
-            child: Row(children: [Text(notificationText)]),
+            child: Row(children: [Text(formatedNotificationText)]),
           ),
         ),
       ),
