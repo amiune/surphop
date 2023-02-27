@@ -43,7 +43,8 @@ class CustomSearchDelegate extends SearchDelegate {
     Map<String, String> searchResults = {};
     await FirebaseFirestore.instance
         .collection('timelines')
-        .where('tags', arrayContains: timelineSearchTerm.toLowerCase())
+        .where('tags',
+            arrayContainsAny: timelineSearchTerm.toLowerCase().split(" "))
         .get()
         .then(((snapshot) => snapshot.docs.forEach(((element) {
               searchResults[element.reference.id] = element["timelineName"];
