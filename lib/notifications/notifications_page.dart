@@ -18,9 +18,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
   List<String> notificationVideoIds = [];
   List<String?> notificationVideoCommentIds = [];
   List<bool> notificationViewed = [];
+  List<DateTime> notificationDate = [];
   Future getMyTimelines() async {
     notificationIds = [];
     notificationTexts = [];
+    notificationVideoIds = [];
+    notificationVideoCommentIds = [];
+    notificationViewed = [];
+    notificationDate = [];
     var notificationsRef = await FirebaseFirestore.instance
         .collection('notifications')
         .where('forUserId', isEqualTo: user.uid.toString())
@@ -37,6 +42,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         notificationVideoCommentIds.add(null);
       }
       notificationViewed.add(element["viewed"]);
+      notificationDate.add(DateTime.parse(element["notificationDate"]));
     }
   }
 
@@ -87,6 +93,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           notificationVideoCommentId:
                               notificationVideoCommentIds[index],
                           notificationViewed: notificationViewed[index],
+                          notificationDate: notificationDate[index],
                           deletePressed: deleteNotification,
                         );
                       });

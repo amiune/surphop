@@ -36,7 +36,8 @@ class _UserTimelinesState extends State<UserTimelines> {
         appBar: AppBar(
             automaticallyImplyLeading: false,
             centerTitle: true,
-            title: Text("${widget.userEmail} Timelines")),
+            title: Text(
+                "${widget.userEmail.substring(0, widget.userEmail.indexOf("@"))} timelines")),
         bottomNavigationBar: BottomAppBar(
           color: Colors.blue,
           child: IconTheme(

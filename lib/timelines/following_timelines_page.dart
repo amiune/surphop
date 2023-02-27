@@ -150,24 +150,30 @@ class _FollowingTimelinesPageState extends State<FollowingTimelinesPage> {
         body: FutureBuilder(
             future: getMyFollowingTimelines(),
             builder: (context, snapshot) {
-              if (timelinesIds.isEmpty) {
-                return const Center(
-                  child: Text(
-                      "You are not following any timelines \n click the search icon to find one"),
-                );
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (timelinesIds.isEmpty) {
+                  return const Center(
+                    child: Text(
+                        "You are not following any timelines \n click the search icon to find one"),
+                  );
+                } else {
+                  return ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 150),
+                      itemCount: timelinesIds.length,
+                      itemBuilder: (context, index) {
+                        return FollowingTimelineTile(
+                          followingTimelineId: followingTimelinesIds[index],
+                          followingTimelineName: followingTimelinesNames[index],
+                          timelineId: timelinesIds[index],
+                          editPressed: editFollowingTimeline,
+                          deletePressed: deleteFollowingTimeline,
+                        );
+                      });
+                }
               } else {
-                return ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 150),
-                    itemCount: timelinesIds.length,
-                    itemBuilder: (context, index) {
-                      return FollowingTimelineTile(
-                        followingTimelineId: followingTimelinesIds[index],
-                        followingTimelineName: followingTimelinesNames[index],
-                        timelineId: timelinesIds[index],
-                        editPressed: editFollowingTimeline,
-                        deletePressed: deleteFollowingTimeline,
-                      );
-                    });
+                return const Center(
+                  child: Text("Loading timelines..."),
+                );
               }
             }));
   }

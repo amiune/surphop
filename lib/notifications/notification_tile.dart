@@ -11,6 +11,7 @@ class NotificationTile extends StatelessWidget {
   final String notificationVideoId;
   final String? notificationVideoCommentId;
   final bool notificationViewed;
+  final DateTime notificationDate;
   final Function(String) deletePressed;
   const NotificationTile(
       {super.key,
@@ -19,6 +20,7 @@ class NotificationTile extends StatelessWidget {
       required this.notificationVideoId,
       required this.notificationVideoCommentId,
       required this.notificationViewed,
+      required this.notificationDate,
       required this.deletePressed});
 
   @override
@@ -27,6 +29,22 @@ class NotificationTile extends StatelessWidget {
         .replaceFirst("uploaded", "\nuploaded")
         .replaceFirst("timeline ", "timeline\n")
         .replaceFirst("from ", "from\n");
+
+    String minutesAgo = "";
+    DateTime today = DateTime.now();
+    int minutes = today.difference(notificationDate).inMinutes;
+    if (minutes <= 60) {
+      minutesAgo = "$minutes minutes ago";
+    } else if (minutes <= 60 * 24) {
+      minutesAgo = "${minutes ~/ 60} hours ago";
+    } else if (minutes <= 60 * 24 * 30) {
+      minutesAgo = "${minutes ~/ (60 * 24)} days ago";
+    } else if (minutes <= 60 * 24 * 30 * 12) {
+      minutesAgo = "${minutes ~/ (60 * 24 * 30)} months ago";
+    } else {
+      minutesAgo = "${(minutes ~/ (60 * 24 * 30 * 12))} years ago";
+    }
+    formatedNotificationText += " $minutesAgo";
     return GestureDetector(
       onTap: () async {
         if (notificationVideoCommentId != null) {
