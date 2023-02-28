@@ -106,55 +106,62 @@ class _PublicTimelineVideosState extends State<PublicTimelineVideos> {
       body: FutureBuilder(
           future: getTimelineVideos(),
           builder: (context, snapshot) {
-            if (timelineVideoURLs.isNotEmpty) {
-              return CustomScrollView(slivers: <Widget>[
-                SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisSpacing: 1,
-                      mainAxisSpacing: 1,
-                      crossAxisCount: 3,
-                      childAspectRatio: 0.55,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return FutureBuilder(
-                            future: DefaultCacheManager()
-                                .getSingleFile(timelineVideoURLs[index]),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) {
-                                        return PublicCachedVideoPage(
-                                          videoId: timelineVideoIds[index],
-                                          videoFile: snapshot.data!,
-                                          videoCreatorId:
-                                              timelineVideoCreatorId[index],
-                                        );
-                                      }));
-                                    },
-                                    child: VideoThumbnailTile(
-                                      videoId: timelineVideoIds[index],
-                                      videoUrl: timelineVideoURLs[index],
-                                      videoUploadedDate:
-                                          timelineVideoUploadedDate[index],
-                                      videoFile: snapshot.data!,
-                                      onDeletePressed: ((p0) {}),
-                                    ));
-                              } else {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
-                            });
-                      },
-                      childCount: timelineVideoURLs.length,
-                    ))
-              ]);
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (timelineVideoURLs.isNotEmpty) {
+                return CustomScrollView(slivers: <Widget>[
+                  SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisSpacing: 1,
+                        mainAxisSpacing: 1,
+                        crossAxisCount: 3,
+                        childAspectRatio: 0.55,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                          return FutureBuilder(
+                              future: DefaultCacheManager()
+                                  .getSingleFile(timelineVideoURLs[index]),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return PublicCachedVideoPage(
+                                            videoId: timelineVideoIds[index],
+                                            videoFile: snapshot.data!,
+                                            videoCreatorId:
+                                                timelineVideoCreatorId[index],
+                                          );
+                                        }));
+                                      },
+                                      child: VideoThumbnailTile(
+                                        videoId: timelineVideoIds[index],
+                                        videoUrl: timelineVideoURLs[index],
+                                        videoUploadedDate:
+                                            timelineVideoUploadedDate[index],
+                                        videoFile: snapshot.data!,
+                                        onDeletePressed: ((p0) {}),
+                                      ));
+                                } else {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                              });
+                        },
+                        childCount: timelineVideoURLs.length,
+                      ))
+                ]);
+              } else {
+                return const Center(
+                  child: Text("There are no videos in this timeline yet"),
+                );
+              }
             } else {
               return const Center(
-                child: Text("There are no videos in this timeline yet"),
+                child: Text("Loading videos..."),
               );
             }
           }),

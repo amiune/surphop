@@ -23,10 +23,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Future signIn() async {
     try {
+      const snackBar = SnackBar(content: Text('Signing in...'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim());
     } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       showDialog(
           context: context,
           builder: (context) {

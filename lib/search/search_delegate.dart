@@ -93,43 +93,49 @@ class CustomSearchDelegate extends SearchDelegate {
       return FutureBuilder<Map<String, String>>(
           future: getTimelinesByName(query),
           builder: ((context, snapshot) {
-            return Container(
-              margin: const EdgeInsets.all(20),
-              child: snapshot.data != null && snapshot.data!.isNotEmpty
-                  ? ListView(
-                      padding: const EdgeInsets.only(top: 8, bottom: 8),
-                      scrollDirection: Axis.vertical,
-                      children: List.generate(snapshot.data!.length, (index) {
-                        var item = snapshot.data!.values.elementAt(index);
-                        return Card(
-                          color: Colors.blue[200],
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return PublicTimelineVideos(
-                                  timelineId:
-                                      snapshot.data!.keys.elementAt(index),
-                                  timelineName:
-                                      snapshot.data!.values.elementAt(index),
-                                );
-                              }));
-                            },
-                            child: Container(
-                                padding: const EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                    color: Colors.blue[200],
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Text(item)),
-                          ),
-                        );
-                      }))
-                  : const Center(
-                      child: Text(
-                      "No results",
-                      style: TextStyle(fontSize: 30),
-                    )),
-            );
+            if (snapshot.connectionState == ConnectionState.done) {
+              return Container(
+                margin: const EdgeInsets.all(20),
+                child: snapshot.data != null && snapshot.data!.isNotEmpty
+                    ? ListView(
+                        padding: const EdgeInsets.only(top: 8, bottom: 8),
+                        scrollDirection: Axis.vertical,
+                        children: List.generate(snapshot.data!.length, (index) {
+                          var item = snapshot.data!.values.elementAt(index);
+                          return Card(
+                            color: Colors.blue[200],
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return PublicTimelineVideos(
+                                    timelineId:
+                                        snapshot.data!.keys.elementAt(index),
+                                    timelineName:
+                                        snapshot.data!.values.elementAt(index),
+                                  );
+                                }));
+                              },
+                              child: Container(
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                      color: Colors.blue[200],
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Text(item)),
+                            ),
+                          );
+                        }))
+                    : const Center(
+                        child: Text(
+                        "No results",
+                        style: TextStyle(fontSize: 30),
+                      )),
+              );
+            } else {
+              return const Center(
+                child: Text("Searching..."),
+              );
+            }
           }));
     }
   }

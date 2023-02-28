@@ -18,6 +18,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future registerUser() async {
     try {
+      const snackBar = SnackBar(content: Text('Registering...'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: _emailController.text.trim(),
@@ -29,6 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
         });
       });
     } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       showDialog(
           context: context,
           builder: (context) {
@@ -52,8 +55,11 @@ class _RegisterPageState extends State<RegisterPage> {
         Text("Register Now", style: GoogleFonts.bebasNeue(fontSize: 52)),
         //const Text("Hello Again!"),
         const SizedBox(height: 10),
-        const Text("and start tracking your progress",
-            style: TextStyle(fontSize: 24)),
+        const Text(
+          "and start tracking\nyour progress",
+          style: TextStyle(fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 30),
         Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),

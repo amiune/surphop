@@ -51,8 +51,10 @@ class _TimelineVideosState extends State<TimelineVideos> {
 
   Future uploadFile() async {
     if (_file == null) return;
-
     try {
+      const snackBar = SnackBar(content: Text('Uploading...'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
       var fileExtension = _file!.path.substring(_file!.path.lastIndexOf('.'));
       int sizeInBytes = _file!.lengthSync();
       double sizeInMb = sizeInBytes / (1024 * 1024);
@@ -228,56 +230,63 @@ class _TimelineVideosState extends State<TimelineVideos> {
       body: FutureBuilder(
           future: getTimelineVideos(),
           builder: (context, snapshot) {
-            if (timelineVideoURLs.isNotEmpty) {
-              return CustomScrollView(slivers: <Widget>[
-                SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisSpacing: 1,
-                      mainAxisSpacing: 1,
-                      crossAxisCount: 3,
-                      childAspectRatio: 0.55,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return FutureBuilder(
-                            future: DefaultCacheManager()
-                                .getSingleFile(timelineVideoURLs[index]),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) {
-                                        return CachedVideoPage(
-                                          videoId: timelineVideoIds[index],
-                                          videoFile: snapshot.data!,
-                                          onDeletePressed: deleteVideo,
-                                          videoCreatorId:
-                                              timelineVideoCreatorId[index],
-                                        );
-                                      }));
-                                    },
-                                    child: VideoThumbnailTile(
-                                      videoId: timelineVideoIds[index],
-                                      videoUrl: timelineVideoURLs[index],
-                                      videoUploadedDate:
-                                          timelineVideoUploadedDate[index],
-                                      videoFile: snapshot.data!,
-                                      onDeletePressed: deleteVideo,
-                                    ));
-                              } else {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
-                            });
-                      },
-                      childCount: timelineVideoURLs.length,
-                    ))
-              ]);
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (timelineVideoURLs.isNotEmpty) {
+                return CustomScrollView(slivers: <Widget>[
+                  SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisSpacing: 1,
+                        mainAxisSpacing: 1,
+                        crossAxisCount: 3,
+                        childAspectRatio: 0.55,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                          return FutureBuilder(
+                              future: DefaultCacheManager()
+                                  .getSingleFile(timelineVideoURLs[index]),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return CachedVideoPage(
+                                            videoId: timelineVideoIds[index],
+                                            videoFile: snapshot.data!,
+                                            onDeletePressed: deleteVideo,
+                                            videoCreatorId:
+                                                timelineVideoCreatorId[index],
+                                          );
+                                        }));
+                                      },
+                                      child: VideoThumbnailTile(
+                                        videoId: timelineVideoIds[index],
+                                        videoUrl: timelineVideoURLs[index],
+                                        videoUploadedDate:
+                                            timelineVideoUploadedDate[index],
+                                        videoFile: snapshot.data!,
+                                        onDeletePressed: deleteVideo,
+                                      ));
+                                } else {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                              });
+                        },
+                        childCount: timelineVideoURLs.length,
+                      ))
+                ]);
+              } else {
+                return const Center(
+                  child: Text("There are no videos in this timeline yet"),
+                );
+              }
             } else {
               return const Center(
-                child: Text("There are no videos in this timeline yet"),
+                child: Text("Loading videos..."),
               );
             }
           }),

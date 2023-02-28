@@ -57,15 +57,27 @@ class _UserTimelinesState extends State<UserTimelines> {
         body: FutureBuilder(
             future: getTimelines(),
             builder: (context, snapshot) {
-              return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 150),
-                  itemCount: timelinesIds.length,
-                  itemBuilder: (context, index) {
-                    return PublicTimelineTile(
-                      timelineId: timelinesIds[index],
-                      timelineName: timelinesNames[index],
-                    );
-                  });
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (timelinesIds.isNotEmpty) {
+                  return ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 150),
+                      itemCount: timelinesIds.length,
+                      itemBuilder: (context, index) {
+                        return PublicTimelineTile(
+                          timelineId: timelinesIds[index],
+                          timelineName: timelinesNames[index],
+                        );
+                      });
+                } else {
+                  return const Center(
+                    child: Text("User not found"),
+                  );
+                }
+              } else {
+                return const Center(
+                  child: Text("Loading users..."),
+                );
+              }
             }));
   }
 }

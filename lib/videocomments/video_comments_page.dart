@@ -66,6 +66,9 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
     if (_file == null) return;
 
     try {
+      const snackBar = SnackBar(content: Text('Uploading...'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
       var fileExtension = _file!.path.substring(_file!.path.lastIndexOf('.'));
       int sizeInBytes = _file!.lengthSync();
       double sizeInMb = sizeInBytes / (1024 * 1024);
@@ -193,58 +196,65 @@ class _VideoCommentsPageState extends State<VideoCommentsPage> {
       body: FutureBuilder(
           future: getVideoComments(),
           builder: (context, snapshot) {
-            if (videoComments.isNotEmpty) {
-              return CustomScrollView(slivers: <Widget>[
-                SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisSpacing: 1,
-                      mainAxisSpacing: 1,
-                      crossAxisCount: 3,
-                      childAspectRatio: 0.55,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return FutureBuilder(
-                            future: DefaultCacheManager().getSingleFile(
-                                videoComments[index].videoCommentURL),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) {
-                                        return CachedVideoCommentPage(
-                                          videoCommentId: videoComments[index]
-                                              .videoCommentId,
-                                          videoFile: snapshot.data!,
-                                          videoState:
-                                              videoComments[index].videoState,
-                                        );
-                                      }));
-                                    },
-                                    child: VideoThumbnailTile(
-                                      videoId:
-                                          videoComments[index].videoCommentId,
-                                      videoUrl:
-                                          videoComments[index].videoCommentURL,
-                                      videoUploadedDate: videoComments[index]
-                                          .videoCommentUploadedDate,
-                                      videoFile: snapshot.data!,
-                                      onDeletePressed: (_) {},
-                                    ));
-                              } else {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
-                            });
-                      },
-                      childCount: videoComments.length,
-                    ))
-              ]);
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (videoComments.isNotEmpty) {
+                return CustomScrollView(slivers: <Widget>[
+                  SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisSpacing: 1,
+                        mainAxisSpacing: 1,
+                        crossAxisCount: 3,
+                        childAspectRatio: 0.55,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                          return FutureBuilder(
+                              future: DefaultCacheManager().getSingleFile(
+                                  videoComments[index].videoCommentURL),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return CachedVideoCommentPage(
+                                            videoCommentId: videoComments[index]
+                                                .videoCommentId,
+                                            videoFile: snapshot.data!,
+                                            videoState:
+                                                videoComments[index].videoState,
+                                          );
+                                        }));
+                                      },
+                                      child: VideoThumbnailTile(
+                                        videoId:
+                                            videoComments[index].videoCommentId,
+                                        videoUrl: videoComments[index]
+                                            .videoCommentURL,
+                                        videoUploadedDate: videoComments[index]
+                                            .videoCommentUploadedDate,
+                                        videoFile: snapshot.data!,
+                                        onDeletePressed: (_) {},
+                                      ));
+                                } else {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                              });
+                        },
+                        childCount: videoComments.length,
+                      ))
+                ]);
+              } else {
+                return const Center(
+                  child: Text("There are no comments for this video yet"),
+                );
+              }
             } else {
               return const Center(
-                child: Text("There are no comments for this video yet"),
+                child: Text("Loading video comments..."),
               );
             }
           }),
