@@ -18,7 +18,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future registerUser() async {
     try {
-      const snackBar = SnackBar(content: Text('Registering...'));
+      const snackBar = SnackBar(
+        content: Center(
+            child: Text(
+          'Registering...',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+        )),
+        backgroundColor: Colors.white,
+      );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -31,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
         });
       });
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      if (mounted) ScaffoldMessenger.of(context).hideCurrentSnackBar();
       showDialog(
           context: context,
           builder: (context) {

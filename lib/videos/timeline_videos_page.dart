@@ -52,7 +52,15 @@ class _TimelineVideosState extends State<TimelineVideos> {
   Future uploadFile() async {
     if (_file == null) return;
     try {
-      const snackBar = SnackBar(content: Text('Uploading...'));
+      const snackBar = SnackBar(
+        content: Center(
+            child: Text(
+          'Uploading...',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+        )),
+        backgroundColor: Colors.white,
+      );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
       var fileExtension = _file!.path.substring(_file!.path.lastIndexOf('.'));
