@@ -5,12 +5,10 @@ learning progress by uploading short videos (less than 5 min) of your daily
 learning activity. 
 
 <p float="left">
-  <img src="./surphop-images/ios/iphone%2011%20pro%20max%206.5/timelines.png" width="100" />
-  <img src="./surphop-images/ios/iphone%2011%20pro%20max%206.5/acuarela-collage." width="100" /> 
-</p>
-<p float="left">
-  <img src="./surphop-images/ios/iphone%2011%20pro%20max%206.5/latte-art-collage.png" width="100" />
-  <img src="./surphop-images/ios/iphone%2011%20pro%20max%206.5/latte-art-pouring.png" width="100" />
+  <img src="./surphop-images/ios/iphone%2011%20pro%20max%206.5/timelines.png" width="150" />
+  <img src="./surphop-images/ios/iphone%2011%20pro%20max%206.5/acuarela-collage.png" width="150" /> 
+  <img src="./surphop-images/ios/iphone%2011%20pro%20max%206.5/latte-art-collage.png" width="150" />
+  <img src="./surphop-images/ios/iphone%2011%20pro%20max%206.5/latte-art-pouring.png" width="150" />
 </p>
 
 I made this app for myself and really helped me to improve my guitar skills
