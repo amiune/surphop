@@ -1,16 +1,18 @@
 # surphop
 
-A new Flutter project.
+This is a Flutter App for Android and iOS that allows you to track your
+learning progress by uploading short videos (less than 5 min) of your daily
+learning activity. 
 
-## Getting Started
+![Timelines](./surphop-images/ios/iphone%2011%20pro%20max%206.5/timelines.png) | [Acuarela](./surphop-images/ios/iphone%2011%20pro%20max%206.5/acuarela-collage.png) | [LatteArt](./surphop-images/ios/iphone%2011%20pro%20max%206.5/latte-art-collage.png)
 
-This project is a starting point for a Flutter application.
+I made this app for myself and really helped me to improve my guitar skills
+and my latte art skills. The key is that the app allows you to see small
+progress that otherwise is not easy to see and with this it helps you
+to avoid frustration.
 
-A few resources to get you started if this is your first Flutter project:
+I think it will be nice to allow people to share this progress and help 
+other people. SURPHOP means Save Your Progress and Help Other People.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Unfortunatelly it will require a lot of money to put this on production
+so here I share the idea and the code.
